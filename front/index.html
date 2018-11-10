@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <head>
+      <link rel="stylesheet" href="style.css">
+  </head>
+
+  <h1>mIFology</h1>
+
+  <p>Petit projet qui centralise des donnees sur des personnages mythologiques.</p>
+
+  <div class="search-container">
+      <input type="text" placeholder="Search.." id="search">
+      <button type="submit" onclick="callAPI()"><i class="fa fa-search"></i></button>
+  </div>
+  <div id="content"></div>
+
+  <script>
+      function callAPI() {
+        const url = "http://localhost:3000/url/"
+        var value = document.getElementById("search").value;
+        console.log(value)
+        var xhr = createCORSRequest("GET", url+value);
+        xhr.send(null);
+      }
+
+      function createCORSRequest(method, url){
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr){
+            xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined"){ // if IE use XDR
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+        } else {
+            xhr = null;
+        }
+        return xhr;
+      }
+  </script>
+</body>
+</html>
+
+
