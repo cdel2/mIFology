@@ -1,7 +1,7 @@
 # mIFology
 Le projet de Web sémantique pour rassembler des données sur des divinités grecques.
 
-#stack
+##stack
 **Front**
 -
 -
@@ -12,4 +12,4 @@ Le projet de Web sémantique pour rassembler des données sur des divinités gre
 -Axios
 -Express
 
-Pour lancer le serveur node, tapez "node index.js" depuis le répertoire "back".
+Pour lancer le serveur node, tapez "node index.js" depuis le répertoire "back" ou bien "node back/index.js" depuis le répertoire du projet.
