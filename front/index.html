@@ -1,17 +1,21 @@
 <!DOCTYPE html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
 <html>
 <body>
   <head>
       <link rel="stylesheet" href="style.css">
   </head>
 
-  <h1>mIFology</h1>
-
-  <p>Petit projet qui centralise des donnees sur des personnages mythologiques.</p>
-
   <div class="search-container">
+      <div class="topnav">
+        <a class="active" href="#home">mIFology</a>
+        <a href="#about">Petit projet qui centralise des donnees sur des personnages mythologiques.</a>  
+      </div>
+      <p></p><p></p><p></p>
       <input type="text" placeholder="Search.." id="search">
-      <button type="submit" onclick="callAPI()"><i class="fa fa-search"></i></button>
+      <button type="submit" onclick="callAPI()">
+        <i class="fa fa-search"></i>
+    </button>
   </div>
   <div id="content"></div>
 
