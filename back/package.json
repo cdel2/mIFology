@@ -1,0 +1,15 @@
+{
+  "name": "index",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "latest",
+    "morgan": "latest",
+    "helmet": "latest",
+    "cors": "latest",
+    "http-status": "latest"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
