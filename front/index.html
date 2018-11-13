@@ -20,7 +20,7 @@
   <script>
       var jsonInfo;
       function callAPI(){
-        const url = "http://localhost:3000/url/"
+        const url = "http://localhost:3000/general/"
         var value = document.getElementById("search").value;
         var xhr = createCORSRequest("get", url+value);
         // Track the state changes of the request

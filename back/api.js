@@ -1,80 +1,116 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
 const functionQueries = require('./queries/sparqlQueries/functionQueries')
+const path = "./back/queries/sparqlQueries/queryFile.txt";
 
-function GetAllInfo(value) {
+async function clean(path) {
+    fs.truncate(path, 0, function(){console.log('cleaning done')});
+}
+
+function getAllInfo(value) {
     return new Promise((resolve, reject) => {
-        //independent queries
-        const generalInfoQuery = functionQueries.generalInfoQuery(value);
-        const siblingsInfoQuery = functionQueries.siblingsInfoQuery(value);
+        const allInfoQuery = functionQueries.AllInfoQuery(value)
 
-        //paths
-        const queryPath = "./back/queries/sparqlQueries/queryFile.txt";
-        const scriptPath = "./back/queries/callQuery.sh";
-
-        //json Array containing all informations from all queries
-        var jsonArray = []
-
-        fs.writeFile(queryPath , generalInfoQuery, "utf8", function(err) {
+        fs.writeFile(path , allInfoQuery, "utf8", function(err) {
             if(err) {
                 return console.log("err1", err);
             }
         
             console.log("The file was saved!");
         }); 
-        
-        var testscript = exec(`SPARQL_QUERY_PATH=${queryPath} ${scriptPath}`, function(e, stdout, stderr) {
-            console.log("stdout", stdout);
-            console.log("stderr", stderr);
-            if (e) console.log("e", e);
-        });
+
+        testscript = exec(`SPARQL_QUERY_PATH=${path} ./back/queries/callQuery.sh`);
 
         testscript.stdout.on('data', function(data, err){
-            if (err) console.log("err2", err);
+            if (err) console.log("err2 =====", err);
+            console.log(data)
 
             //clean file
-            fs.truncate(queryPath, 0, function(){console.log('cleaning done')});
-
-            JSON.parse(data);
-            jsonArray["general"] = data;
-            console.log("general", jsonArray["general"])
+            clean(path).then(resolve(JSON.parse(data)))
+            
         });
+    })
+}
 
-        fs.writeFile(queryPath , siblingsInfoQuery, "utf8", function(err) {
-            if(err) {
-                return console.log("err1", err);
-            }
-        
-            console.log("The file was saved!");
-        }); 
-        
-        testscript = exec(`SPARQL_QUERY_PATH=${queryPath} ${scriptPath}`, function(e, stdout, stderr) {
-            console.log(stdout);
-            console.log(stderr);
-            if (e) console.log(e);
-        });
+/*
 
-        testscript.stdout.on('data', function(data, err){
-            if (err) console.log("err2", err);
+function getAllInfo(value) {
+    return new Promise((resolve, reject) => {
+        var jsonArray = [];
+        var testscipt;
 
-            //clean file
-            fs.truncate(queryPath, 0, function(){console.log('cleaning done')});
+        queries = [functionQueries.siblingsInfoQuery(value), functionQueries.generalInfoQuery(value)]
+        paths = ["./back/queries/sparqlQueries/generalInfoFile.txt", "./back/queries/sparqlQueries/siblingsInfoFile.txt"]
 
-            JSON.parse(data);
-            jsonArray["siblings"] = data[0];
-            console.log("siblings", jsonArray["siblings"])
-        });
+        for(var i = 0; i < paths.length; i++)
+        {
+            console.log(i)
+            fs.writeFile(paths[i] , queries[i], "utf8", function(err) {
+                if(err) {
+                    return console.log("err1", err);
+                }
+            
+                console.log("The file was saved!");
+            }); 
+
+            testscript = exec(`SPARQL_QUERY_PATH=${path} ./back/queries/callQuery.sh`);
+
+            testscript.stdout.on('data', function(data, err){
+                if (err) console.log("err2 =====", err);
+                console.log(data)
+                //clean file
+                clean(paths[i]).then(jsonArray[i] = JSON.parse(data)[0])
+            });
+
+        }
 
         resolve(jsonArray)
+    })
+}*/
 
+    
+function getGeneralInfo(value) {
+    return new Promise((resolve, reject) => {
+        const generalInfoQuery = functionQueries.generalInfoQuery(value);
+        fs.writeFile(path , generalInfoQuery, "utf8", function(err) {
+            if(err) {
+                return console.log("err1", err);
+            }
+        
+            console.log("The file was saved!");
+        }); 
+        
+        const testscript = exec(`SPARQL_QUERY_PATH=${path} ./back/queries/callQuery.sh`);
 
+        testscript.stdout.on('data', function(data, err){
+            if (err) console.log("err2 =====", err);
 
+            //clean file
+            clean(path).then(resolve(JSON.parse(data)[0]))
+        });
+    })
+}
 
+function getSiblingsInfo(value) {
+    return new Promise((resolve, reject) => {
+        const siblingsInfoQuery = functionQueries.siblingsInfoQuery(value);
+        fs.writeFile(path , siblingsInfoQuery, "utf8", function(err) {
+            if(err) {
+                return console.log("err1", err);
+            }
+        
+            console.log("The file was saved!");
+        }); 
+        
+        const testscript = exec(`SPARQL_QUERY_PATH=${path} ./back/queries/callQuery.sh`);
 
+        testscript.stdout.on('data', function(data, err){
+            if (err) console.log("err2 =====", err);
 
+            //clean file
+            clean(path).then(resolve(JSON.parse(data)[0]))
+        });
+    })
+}
 
-    }
-)}
-
-
-module.exports = {GetAllInfo}
+module.exports = {getAllInfo, getGeneralInfo, getSiblingsInfo}

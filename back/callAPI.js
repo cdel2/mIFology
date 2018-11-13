@@ -4,10 +4,17 @@ const api = require('./api')
 
 module.exports = (app, options) => {
     
-    app.get('/url/:value', (req, res, next) => {
+    app.get('/general/:value', (req, res, next) => {
         console.log("query", req.params.value)
-        //récupération des URLs
-        api.GetAllInfo(req.params.value).then(response => {
+        api.getAllInfo(req.params.value).then(response => {
+            res.status(200).json(response)
+            console.log("response", response)
+        }).catch(next)
+    })
+
+    app.get('/siblings/:value', (req, res, next) => {
+        console.log("query", req.params.value)
+        api.getSiblingsInfo(req.params.value).then(response => {
             res.status(200).json(response)
             console.log("response", response)
         }).catch(next)
