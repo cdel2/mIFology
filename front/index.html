@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<html>
+<body>
+  <head>
+      <link rel="stylesheet" href="style.css">
+  </head>
+
+  <div class="search-container">
+      <div class="topnav">
+        <a class="active" href="#home">mIFology</a>
+        <a href="#about">Petit projet qui centralise des donnees sur des personnages mythologiques.</a>  
+      </div>
+      <p></p><p></p><p></p>
+      <input type="text" placeholder="Search.." id="search">
+      <button type="submit" onclick="callAPI()">
+        <i class="fa fa-search"></i>
+    </button>
+  </div>
+  <div id="content"></div>
+
+  <script>
+      function callAPI() {
+        const url = "http://localhost:3000/url/"
+        var value = document.getElementById("search").value;
+        console.log(value)
+        var xhr = createCORSRequest("GET", url+value);
+        xhr.send(null);
+      }
+
+      function createCORSRequest(method, url){
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr){
+            xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined"){ // if IE use XDR
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+        } else {
+            xhr = null;
+        }
+        return xhr;
+      }
+  </script>
+</body>
+</html>
+
+
