@@ -18,6 +18,7 @@
   <div id="content"></div>
 
   <script>
+      var jsonInfo;
       function callAPI(){
         const url = "http://localhost:3000/url/"
         var value = document.getElementById("search").value;
@@ -28,7 +29,9 @@
             if(xhr.readyState === 4){
             // 200 is a successful return
                 if(xhr.status === 200){
-                    console.log(xhr); 
+                    jsonInfo = JSON.parse(xhr.responseText);
+                    console.log(jsonInfo);                     
+                    console.log(jsonInfo["image"]["value"]); // 'Accéder à un élément particulier'
                 }else{
                     alert('Error: '+xhr.status); // An error occurred during the request
                 }
@@ -55,4 +58,3 @@
   </script>
 </body>
 </html>
-
