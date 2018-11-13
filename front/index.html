@@ -13,13 +13,7 @@
       </div>
       <p></p><p></p><p></p>
       <input type="text" placeholder="Search.." id="search">
-<<<<<<< HEAD
-      <button type="submit" onclick="callAPI()">
-        <i class="fa fa-search"></i>
-    </button>
-=======
       <button type="submit" onclick="callAPI()"></button>
->>>>>>> init
   </div>
   <div id="content"></div>
 
@@ -34,7 +28,7 @@
             if(xhr.readyState === 4){
             // 200 is a successful return
                 if(xhr.status === 200){
-                    console.log(JSON.parse(xhr.responseText)); // 'This is the returned text.'
+                    console.log(xhr); 
                 }else{
                     alert('Error: '+xhr.status); // An error occurred during the request
                 }
