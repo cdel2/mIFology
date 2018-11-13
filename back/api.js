@@ -12,24 +12,26 @@ function getDBpediaInfo(value) {
                 ?a rdfs:label ?abode.
             
             Filter(regex(?t,".*Greek.*") and regex(?n,".*${value}( |$)") and lang(?abode)='en')
-        } `
+        } `;
         
-        fs.writeFile("./queries/sparqlQueries/sparqlQuery.txt", query, function(err) {
+        const path = "./queries/sparqlQueries/query.txt";
+
+        fs.writeFile(path , query, "utf8", function(err) {
             if(err) {
-                throw (err);
+                return console.log("err1", err);
             }
         
             console.log("The file was saved!");
         }); 
         
-        const testscript = exec('SPARQL_QUERY_PATH=./queries/sparqlQueries/sparqlQuery.txt ./queries/dbpediaSPARQL.sh');
+        const testscript = exec(`SPARQL_QUERY_PATH=${path} ./queries/dbpediaSPARQL.sh`);
 
         testscript.stdout.on('data', function(data, err){
-            if (err) throw (err);
+            if (err) console.log("err2 =====", err);
 
 
             //clean file
-            fs.truncate('./queries/sparqlQueries/sparqlQuery.txt', 0, function(){console.log('cleaning done')});
+            fs.truncate(path, 0, function(){console.log('cleaning done')});
 
             resolve(JSON.parse(data))
         });
