@@ -13,22 +13,38 @@
       </div>
       <p></p><p></p><p></p>
       <input type="text" placeholder="Search.." id="search">
+<<<<<<< HEAD
       <button type="submit" onclick="callAPI()">
         <i class="fa fa-search"></i>
     </button>
+=======
+      <button type="submit" onclick="callAPI()"></button>
+>>>>>>> init
   </div>
   <div id="content"></div>
 
   <script>
-      function callAPI() {
+      function callAPI(){
         const url = "http://localhost:3000/url/"
         var value = document.getElementById("search").value;
-        console.log(value)
-        var xhr = createCORSRequest("GET", url+value);
-        xhr.send(null);
-      }
+        var xhr = createCORSRequest("get", url+value);
+        // Track the state changes of the request
+        xhr.onreadystatechange = function(){
+            // Ready state 4 means the request is done
+            if(xhr.readyState === 4){
+            // 200 is a successful return
+                if(xhr.status === 200){
+                    console.log(JSON.parse(xhr.responseText)); // 'This is the returned text.'
+                }else{
+                    alert('Error: '+xhr.status); // An error occurred during the request
+                }
+            }
+        }
 
-      function createCORSRequest(method, url){
+        xhr.send(null)
+    }
+
+    function createCORSRequest(method, url){
         var xhr = new XMLHttpRequest();
         if ("withCredentials" in xhr){
             xhr.open(method, url, true);
@@ -38,10 +54,11 @@
         } else {
             xhr = null;
         }
-        return xhr;
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        return (xhr);
       }
+
   </script>
 </body>
 </html>
-
 

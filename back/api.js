@@ -1,54 +1,42 @@
-const  GoogleSearch = require('google-search')
-const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
+const exec = require('child_process').exec;
+const fs = require('fs');
 
-/*credentials and API settings*/
-//Google API
-const googleSearch = new GoogleSearch({
-    key: 'AIzaSyALjVcdWyjEGOSQYeNVcSfMSH8Ad8skQuY',
-    cx: '011311593262593075698:yu5va13zddu'
-});
-
-//Watson API
-const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
-    version: '2018-03-16',
-    iam_apikey: 'tOoqgWF90q1hT_RIsm_HjKrLjORmLIkdDSkj47baGwnR',
-    url: 'https://gateway-syd.watsonplatform.net/natural-language-understanding/api'
-});
-
-
-function getURLsFromGoogle(query) {
+function getDBpediaInfo(value) {
     return new Promise((resolve, reject) => {
+        const query = `
+        select ?n,?abode  where {
+            ?uri dbp:name ?n;
+                dbp:godOf ?go;
+                dbp:type ?t;
+                dbp:abode ?a. 
+                ?a rdfs:label ?abode.
+            
+            Filter(regex(?t,".*Greek.*") and regex(?n,".*${value}( |$)") and lang(?abode)='en')
+        } `;
+        
+        const path = "./queries/sparqlQueries/query.txt";
 
-        googleSearch.build({
-            q: query,
-            num: 10, // Number of search results to return between 1 and 10, inclusive
-            //siteSearch: "http://kitaplar.ankara.edu.tr/" // Restricts results to URLs from a specified site
-            }, function(error, urls) {
-                if (error) throw error
-                resolve(urls)
+        fs.writeFile(path , query, "utf8", function(err) {
+            if(err) {
+                return console.log("err1", err);
+            }
+        
+            console.log("The file was saved!");
+        }); 
+        
+        const testscript = exec(`SPARQL_QUERY_PATH=${path} ./queries/dbpediaSPARQL.sh`);
+
+        testscript.stdout.on('data', function(data, err){
+            if (err) console.log("err2 =====", err);
+
+
+            //clean file
+            fs.truncate(path, 0, function(){console.log('cleaning done')});
+
+            resolve(JSON.parse(data))
         });
     }
 )}
 
-function getURIsFromWatson(url) { 
-    var res = "";
-    console.log("url",url); 
-    const parameters = {
-        'url': url,
-        'features': {
-          'concepts': {
-            'limit': 3
-          }
-        }
-    };
-    naturalLanguageUnderstanding.analyze(parameters, function(error, response) {
-        //if (error) console.log(error)
-        //console.log("response", response)
-        if(response !== null)  res = JSON.stringify(response, null, 2);
-        console.log("res", res)
-    });
 
-    return res;
-}
-
-module.exports = {getURLsFromGoogle, getURIsFromWatson}
+module.exports = {getDBpediaInfo}
