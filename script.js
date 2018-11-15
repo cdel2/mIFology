@@ -1,5 +1,17 @@
+var godsArray = []
+
 function getGodsInfo(){
-    document.getElementById("resultTable").style.display="block";
+    console.log(godsArray)
+    console.log($("#GodName").val())
+    console.log(godsArray.indexOf($("#GodName").val()))
+    if (godsArray.indexOf($("#GodName").val()) !== -1) {
+        document.getElementById("resultTable").style.display="block";
+        document.getElementById("noGodFound").style.display="none";
+    }
+    if (godsArray.indexOf($("#GodName").val()) === -1) {
+        document.getElementById("resultTable").style.display="none";
+        document.getElementById("noGodFound").style.display="block";
+    }
     var abode = []
     var gender = []
     var godOf = []
@@ -198,8 +210,6 @@ function getGodsInfo(){
         url: encodedGeneralQuery, 
         success: function(result) {
             var results = result.results.bindings; 
-                var results = result.results.bindings; 
-            var results = result.results.bindings; 
             for (var res in results) {
                 tmpAbode = results[res].Abode.value;   
                 if (abode.indexOf(" " + tmpAbode) === -1) abode.push(" " + tmpAbode)
@@ -276,8 +286,6 @@ function getGodsInfo(){
             for (var res in results) {
                 consort = results[res].Consorts.value
                 if (consorts.indexOf(" " + consort) === -1) consorts.push(" " + consort)
-                console.log(" " + consort)
-                console.log(consorts)
             }
         } 
     }).then($.ajax({ 

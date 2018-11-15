@@ -12,8 +12,6 @@ function autoComplete() {
         dataType: "jsonp", 
         url: allGodsQuery, 
         success: function(data) {
-            var godsArray = []
-            console.log(data);
             
             for (var i = 0; i < data.results.bindings.length; i++) {
                 godsArray.push(data.results.bindings[i]["callret-0"].value);
