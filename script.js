@@ -197,13 +197,20 @@ function getGodsInfo(){
     $.ajax({ 
         url: encodedGeneralQuery, 
         success: function(result) {
+            var results = result.results.bindings; 
                 var results = result.results.bindings; 
-                for (var res in results) {
-                abode = results[res].Abode.value;
-                gender = results[res].Gender.value;
-                godOf = results[res].GodOf.value;
-                image = results[res].image.value;
-                nameOfGod = results[res].nameOfGod.value;
+            var results = result.results.bindings; 
+            for (var res in results) {
+                tmpAbode = results[res].Abode.value;   
+                if (abode.indexOf(" " + tmpAbode) === -1) abode.push(" " + tmpAbode)
+                tmpGender = results[res].Gender.value;
+                if (gender.indexOf(tmpGender) === -1) gender.push(tmpGender)
+                tmpGodOf = results[res].GodOf.value;
+                if (godOf.indexOf(" " + tmpGodOf) === -1) godOf.push(" " + tmpGodOf)
+                tmpImage = results[res].image.value;
+                if (image.indexOf(tmpImage) === -1) image.push(tmpImage)
+                tmpNameOfGod = results[res].nameOfGod.value;
+                if (nameOfGod.indexOf(tmpNameOfGod) === -1) nameOfGod.push(tmpNameOfGod)
             }
             document.getElementById('godName').innerHTML=$("#GodName").val();
             document.getElementById('godFunction').innerHTML=godOf;
@@ -220,7 +227,7 @@ function getGodsInfo(){
             var results = result.results.bindings; 
             for (var res in results) {
                 sibling = results[res].Sibling.value
-                if (siblings.indexOf(sibling) === -1) siblings.push(sibling)
+                if (siblings.indexOf(" " + sibling) === -1) siblings.push(" " + sibling)
             }
             document.getElementById('godSiblings').innerHTML=siblings;
         } 
@@ -232,7 +239,7 @@ function getGodsInfo(){
             var results = result.results.bindings; 
             for (var res in results) {
                 symbol = results[res].Symbol.value
-                if (symbols.indexOf(symbol) === -1) symbols.push(symbol)
+                if (symbols.indexOf(" " + symbol) === -1) symbols.push(" " + symbol)
             }
             document.getElementById('godSymbol').innerHTML=symbols;
         } 
@@ -244,7 +251,7 @@ function getGodsInfo(){
             var results = result.results.bindings; 
             for (var res in results) {
                 child = results[res].Children.value
-                if (children.indexOf(child) === -1) children.push(child)
+                if (children.indexOf(" " + child) === -1) children.push(" " + child)
             }
             document.getElementById('godChildren').innerHTML=children;
         } 
@@ -256,7 +263,7 @@ function getGodsInfo(){
             var results = result.results.bindings; 
             for (var res in results) {
                 parent = results[res].parent.value
-                if (parents.indexOf(parent) === -1) parents.push(parent)
+                if (parents.indexOf(" " + parent) === -1) parents.push(" " + parent)
             }
             document.getElementById('godParents').innerHTML=parents;
         } 
@@ -268,20 +275,20 @@ function getGodsInfo(){
             var results = result.results.bindings; 
             for (var res in results) {
                 consort = results[res].Consorts.value
-                if (consorts.indexOf(consort) === -1) consorts.push(consort)
+                if (consorts.indexOf(" " + consort) === -1) consorts.push(" " + consort)
+                console.log(" " + consort)
+                console.log(consorts)
             }
         } 
-    }); 
-    
-    $.ajax({ 
+    }).then($.ajax({ 
         url: encodedConsortsQuery2, 
         success: function(result) {
             var results = result.results.bindings; 
             for (var res in results) {
                 consort = results[res].Consort.value
-                if (consorts.indexOf(consort) === -1) consorts.push(consort)
+                if (consorts.indexOf(" " + consort) === -1) consorts.push(" " + consort)
             }
             document.getElementById('godConsorts').innerHTML=consorts;
         } 
-    }); 
+    }))
 }
