@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Greek Gods</title>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="style.css">
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="./script.js"></script>		
+		<script type="text/javascript" src="./autoComplete.js"></script>		
+	</head>
+
+	<body>
+		
+		<div class="search-container">
+			<div class="topnav">
+				<a class="active" href="#home">mIFology</a>
+				<a href="#about">Petit projet qui centralise des donnees sur des personnages mythologiques.</a>  
+			</div>
+
+			<div class="ui-widget">
+				<label for="GodName">God Name: </label>
+				<input type="text" placeholder="Search for a god name.." name="GodName" id="GodName" value="Zeus">
+				<input type="button" onclick="getGodsInfo()" name="GetInfo" id="GetInfo" value="Get Info from god"/>
+			</div>
+		</div>
+		
+		<br>
+
+		<div id="resultTable"  style="display:none;">
+			<table style="width:70%" align="center">
+				<tr>
+					<td><img id="godImage" align="left" style="width:150px;height:180px;"> <h1><div id="godName"></div></h1> <div id="godFunction"></div></td>
+				</tr>
+			</table>
+				
+			<table style="width:70%" align="center">
+				
+				<tr>
+					<td><b>Gender</b></td>
+					<td><div id="godGender"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Abode</b></td>
+					<td><div id="godAbode"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Symbol</b></td>
+					<td><div id="godSymbol"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Consort</b></td>
+					<td><div id="godConsorts"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Parents</b></td>
+					<td><div id="godParents"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Children</b></td>
+					<td><div id="godChildren"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Siblings</b></td>
+					<td><div id="godSiblings"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Video games appearences</b></td>
+					<td><div id="godGames"></div></td> 
+				</tr>
+			
+				<tr>
+					<td><b>Movies appearences</b></td>
+					<td><div id="godMovies"></div></td> 
+				</tr>
+
+			</table>
+		</div>
+		<br>
+		<br>
+		<br>
+	</body>
+
+	<script>
+		$(document).ready(function() {
+			autoComplete();
+		})
+	</script>
+</html>
