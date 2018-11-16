@@ -111,33 +111,32 @@ function getGodsInfo() {
         }`
 
     var childrenQuery = `
-        SELECT DISTINCT STR(?child) as ?Children
-        WHERE {
-        ?uri dbp:name ?n;
-        dbp:godOf ?go;
-        dbp:type ?t.
-        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
-        
-        {
-            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30} 
-            ?uri dbp:children ?childrenStr.
-            FILTER(!isBlank(?childrenStr)  and isLiteral(?childrenStr))
-            BIND(replace(?childrenStr, " and ", " ") as ?childStr)
-            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
-            BIND (replace(replace(?childStr, ?skipN, ""), ",.*$", "") AS ?child)
-        }
-        UNION 
-        {
-            {?uri dbp:children ?children.}
-            UNION
-            {?children dbp:parents ?uri.}
-
-            ?children dbp:type ?t;
-            dbp:name ?child.
-            
-            Filter(isLiteral(?child))
-        }  
-        }
+    SELECT DISTINCT STR(?child) as ?Children
+    WHERE {
+      ?uri dbp:name ?n;
+      dbp:godOf ?go;
+      dbp:type ?t.
+      FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
+      { 
+         VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30} 
+         ?uri dbp:children ?childrenStr.
+         FILTER(!isBlank(?childrenStr)  and isLiteral(?childrenStr))
+         BIND(replace(?childrenStr, " and ", " ") as ?childStr)
+         BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
+         BIND (replace(replace(?childStr, ?skipN, ""), ",.*$", "") AS ?child)
+      }
+      UNION 
+      {
+         {?uri dbp:children ?children.}
+         UNION
+         {?children dbp:parents ?uri.}
+    
+         ?children rdfs:label ?child.
+         
+         Filter(isLiteral(?child) and lang(?child)="en")
+      }  
+    }
+    
     `
     var parentsQuery = `
         select DISTINCT ?parent  where 
