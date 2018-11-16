@@ -6,7 +6,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Greek Gods</title>
-		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 		<link rel="stylesheet" href="style.css">
 		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -19,13 +19,16 @@
 		
 		<div class="search-container">
 			<div class="topnav">
-				<a class="active" href="#home">mIFology</a>
-				<a href="#about">Petit projet qui centralise des donnees sur des personnages mythologiques.</a>  
+				<a class="active" href="#home">Mythologie</a>
+				<a href="#about">Moteur de recherche pour les personnages mythologiques de la grèce antique</a>  
 			</div>
 
 			<div class="ui-widget">
 				<label for="GodName">God Name: </label>
-				<input type="text" placeholder="Search for a god name.." name="GodName" id="GodName" value="Zeus">
+				<input type="text" placeholder="Search for a god name.." name="GodName" id="GodName" list="godsNames">
+				<datalist id="godsNames">
+				  
+				</datalist>
 				<input type="button" onclick="getGodsInfo()" name="GetInfo" id="GetInfo" value="Get Info from god"/>
 			</div>
 		</div>
@@ -102,5 +105,14 @@
 		$(document).ready(function() {
 			autoComplete();
 		})
+
+
+		var input = document.getElementById("GodName");
+		input.addEventListener("keyup", function(event) {
+		    event.preventDefault();
+		    if (event.keyCode === 13) {
+		        document.getElementById("GetInfo").click();
+		    }
+		});
 	</script>
 </html>
