@@ -22,7 +22,7 @@ function getGodsInfo() {
     }
 
 
-    //Make sure that the loading is understood by the user
+    //Display loading while data is loading
     document.getElementById('godImage').src = "LoadingImage.jpg"
     document.getElementById('godGender').innerHTML = "Loading..";
     document.getElementById('godAbode').innerHTML= "Loading..";
@@ -32,13 +32,7 @@ function getGodsInfo() {
     document.getElementById('godParents').innerHTML= "Loading..";
     document.getElementById('godConsorts').innerHTML = "Loading..";
     document.getElementById('godGames').innerHTML = "Loading..";
-
-
-
-
-
-
-
+    document.getElementById('godMovies').innerHTML = "Loading..";
 
 
 
@@ -53,35 +47,44 @@ function getGodsInfo() {
     var children = []
     var consorts = []
     var games = []
+    var movies = []
     var URL = 'https://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=';
     var suffix = '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+';
-    var gQuery = `select%20%3Furi%20as%20%3Fresource%2C%20STR(%3Fn)%20as%20%3FnameOfGod%2C%20%3Fimage%2C%20STR(%3Fgo)%20as%20%3FGodOf%2CSTR(%3Fabode)%20as%20%3FAbode%2C%20if(EXISTS%7B%3Furi%20foaf%3Agender%20%3Fge%7D%2C%20STR(%3Fge)%2C%20(if(regex(%3FGodOf%2C%22.*God%20.*%22)%2C%20%22Male%22%2C%22Female%22)))%20as%20%3FGender%20where%20%7B%0A%0A%20%20%20%3Furi%20dbp%3Aname%20%3Fn%3B%0A%20%20%20dbp%3Atype%20%3Ft.%0A%20%20%20Filter(regex(%3Ft%2C%22.*Greek.*%22)%20and%20datatype(%3Fn)%3Drdf%3AlangString%20and%20regex(%3Fn%2C%20%22.*` + godNamewithGoodCaps + `(_%7C%20%7C%24)%22))%0A%20%20%20%7B%0A%20%20%20%20%3Furi%20dbp%3AgodOf%20%3Fgo.%0A%20%20%20%20FILTER(isLiteral(%3Fgo))%0A%20%20%20%7D%0A%20%20%20UNION%0A%20%20%20%7B%0A%20%20%20%20%3Furi%20dbp%3AgodOf%20%3Fgoresource.%0A%20%20%20%20%3Fgoresource%20rdfs%3Alabel%20%3Fgo.%0A%20%20%20%20FILTER(isLiteral(%3Fgo)%20and%20lang(%3Fgo)%3D%22en%22)%0A%20%20%20%7D%0A%20%20%20optional%7B%3Furi%20dbo%3Athumbnail%20%3Fimage%7D.%0A%0A%20%20%20optional%7B%0A%20%20%20%20%20%20%3Furi%20dbp%3Aabode%20%3Fa.%20%0A%20%20%20%20%20%20%3Fa%20rdfs%3Alabel%20%3Fabode.%0A%20%20%20%20%20%20FILTER(lang(%3Fabode)%3D%22en%22)%0A%20%20%20%7D.%0A%20%20%20optional%7B%3Furi%20foaf%3Agender%20%3Fge%7D.%0A%7D`
+    
+
+    /////////////////////////Sparql queries//////////////////////////////////////////////////
+
+    //Pour plus d'infos sur chaque requête, merci de se référer à l'annexe du compte rendu pdf. 
     var generalQuery = `
-        select ?uri as ?resource, STR(?n) as ?nameOfGod, ?image, STR(?go) as ?GodOf, STR(?abode) as ?Abode, if(EXISTS{?uri foaf: gender ?ge}, STR(?ge), (if(regex(?GodOf, ".*God .*"), "Male", "Female"))) as ?Gender where {
+        select ?uri as ?resource, STR(?n) as ?nameOfGod, ?image, STR(?go) as ?GodOf,STR(?abode) as ?Abode, if(EXISTS{?uri foaf:gender ?ge}, STR(?ge),(if(regex(?GodOf,".*God .*","i"), "Male",(if(regex(?GodOf,".*Goddess .*","i"), "Female","Not specified"))))) as ?Gender where {
 
-   ?uri dbp: name ?n;
-        dbp: type ?t.
-   Filter(regex(?t, ".*Greek.*") and datatype(?n) =rdf: langString and regex(?n, ".*`+godNamewithGoodCaps+`(_| |$)"))
-    {
-    ?uri dbp: godOf ?go.
+   ?uri dbp:name ?n;
+   dbp:type ?t.
+   
+   Filter(regex(?t,".*Greek.*") and datatype(?n)=rdf:langString and regex(?n, ".*`+godNamewithGoodCaps+`(_| |$)"))
+  
+   {
+    ?uri dbp:godOf ?go.
     FILTER(isLiteral(?go))
-    }
+   }
    UNION
-    {
-    ?uri dbp: godOf ?goresource.
-    ?goresource rdfs: label ?go.
-    FILTER(isLiteral(?go) and lang(?go) ="en")
-    }
-   optional{?uri dbo: thumbnail ?image}.
+   {
+    ?uri dbp:godOf ?goresource.
+    ?goresource rdfs:label ?go.
+    FILTER(isLiteral(?go) and lang(?go)="en")
+   }
+   
+   optional{?uri dbo:thumbnail ?image}.
 
+   
    optional{
-      ?uri dbp: abode ?a.
-      ?a rdfs: label ?abode.
-      FILTER(lang(?abode) ="en")
-    }.
-   optional{?uri foaf: gender ?ge}.
-    }
-
+      ?uri dbp:abode ?a. 
+      ?a rdfs:label ?abode.
+      FILTER(lang(?abode)="en")
+   }.
+  
+   optional{?uri foaf:gender ?ge}.
+}
     `
     var siblingsQuery = `
         SELECT DISTINCT STR(?sibling) as ?Sibling
@@ -238,7 +241,7 @@ function getGodsInfo() {
         }
         }
     `
-    var test = "\\.";
+    
     var gamesQuery = `
         select distinct(STR(?label)) as ?game where {
         ?uri ?b dbo:VideoGame.
@@ -270,22 +273,22 @@ function getGodsInfo() {
 
         }
         `
-        
-        /*
-        var gamesQuery = `
-        select STR(?label) as ?game where {
-        ?uri ?b dbo:VideoGame.
-        ?uri rdfs:comment ?comment.
-        ?uri dbo:abstract ?abstract.
-        ?uri rdfs:label ?label.
-        Filter( lang(?label)="en" and ( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment,"`+godNamewithGoodCaps+`( |,|;)") || regex(?abstract,"`+godNamewithGoodCaps+`( |,|;)") ) )
-        }
+
+
+    var moviesQuery=`
+        select Distinct(STR(?label)) as ?movie , ?uri where{
+      ?uri rdf:type dbo:Film;
+           dbo:abstract ?abstract;
+           rdfs:label ?label;
+           rdf:type ?type.
+      Filter(( lang(?label)="en" and lang(?abstract)="en" ) and ( regex(?abstract,"`+godNamewithGoodCaps+`( |,|;|\\\\.)")  and  (regex(?type,"mytholog","i")  ||  regex(?abstract,"mytholog","i")   ||  regex(?abstract," god( |,|;|.//)","i")  )  ))
+}
+
         `
-        */
 
 
 
-    var encodedGeneralQuery = URL + gQuery + suffix
+    var encodedGeneralQuery = URL + encodeURI(generalQuery) + suffix
     var encodedSiblingsQuery = URL+encodeURI(siblingsQuery)+suffix
     var encodedSymbolsQuery = URL+encodeURI(symbolsQuery)+suffix
     var encodedChildrenQuery = URL+encodeURI(childrenQuery)+suffix
@@ -293,7 +296,7 @@ function getGodsInfo() {
     var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
     var encodedConsortsQuery2 = URL + encodeURI(consortsQuery2) + suffix
     var encodedGamesQuery = URL + encodeURI(gamesQuery) + suffix
-
+    var encodedMoviesQuery = URL + encodeURI(moviesQuery) + suffix
 
 
 
@@ -428,6 +431,19 @@ function getGodsInfo() {
             }
             if (games.length == 0) document.getElementById('godGames').innerHTML = "No games found";
            else document.getElementById('godGames').innerHTML = games;
+        }
+    });
+
+    $.ajax({
+        url: encodedMoviesQuery,
+        success: function (result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                movie = results[res].movie.value
+                if (movies.indexOf(" " + movie) === -1) movies.push(" " + movie)
+            }
+            if (movies.length == 0) document.getElementById('godMovies').innerHTML = "No movies found";
+           else document.getElementById('godMovies').innerHTML = movies;
         }
     });
 }
