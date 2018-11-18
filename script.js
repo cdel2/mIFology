@@ -20,6 +20,28 @@ function getGodsInfo() {
         document.getElementById("resultTable").style.display="none";
         document.getElementById("noGodFound").style.display="block";
     }
+
+
+    //Make sure that the loading is understood by the user
+    document.getElementById('godImage').src = "LoadingImage.jpg"
+    document.getElementById('godGender').innerHTML = "Loading..";
+    document.getElementById('godAbode').innerHTML= "Loading..";
+    document.getElementById('godSiblings').innerHTML= "Loading..";
+    document.getElementById('godSymbol').innerHTML= "Loading..";
+    document.getElementById('godChildren').innerHTML= "Loading..";
+    document.getElementById('godParents').innerHTML= "Loading..";
+    document.getElementById('godConsorts').innerHTML = "Loading..";
+    document.getElementById('godGames').innerHTML = "Loading..";
+
+
+
+
+
+
+
+
+
+
     var abode = []
     var gender = []
     var godOf = []
@@ -217,17 +239,53 @@ function getGodsInfo() {
         }
         }
     `
+    var test = "\\.";
     var gamesQuery = `
-        select STR(?label) as ?game where {
+        select distinct(STR(?label)) as ?game where {
+        ?uri ?b dbo:VideoGame.
+        ?uri rdfs:comment ?comment.
+        ?uri dbo:abstract ?abstract.
+        {
+            ?uri ?b2 dbc:Video_games_based_on_Greek_mythology.
+        }
+        UNION
+        {
+            ?uri ?b2 yago:WikicatMythology-basedVideoGames.
+        }
+        UNION
+        {
+            ?uri ?b2 dbc:Mythology-based_video_games
+        }
+        UNION
+        {
+            ?uri ?b2 dbc:Video_games_set_in_antiquity
+        }
+        UNION
+        {
+            ?uri rdfs:comment ?comment.
+            ?uri dbo:abstract ?abstract.
+            Filter(( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment,"(m|M)ytholog(y|ical)") || regex(?comment,"(G|g)reek") || regex(?abstract,"(m|M)ytholog(y|ical)") || regex(?abstract,"(G|g)reek") ) )
+        }
+        ?uri rdfs:label ?label.
+        Filter( lang(?label)="en" and ( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment,"`+godNamewithGoodCaps+`( |,|;/\\\\.)") || regex(?abstract,"`+godNamewithGoodCaps+`( |,|;|\\\\.)") ) )
 
+        }
+        `
+        
+        /*
+        var gamesQuery = `
+        select STR(?label) as ?game where {
         ?uri ?b dbo:VideoGame.
         ?uri rdfs:comment ?comment.
         ?uri dbo:abstract ?abstract.
         ?uri rdfs:label ?label.
-         Filter( lang(?label)="en" and ( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment," `+godNamewithGoodCaps+`( |,|.)") || regex(?abstract," `+godNamewithGoodCaps+`( |,|.)") ) )
-
+        Filter( lang(?label)="en" and ( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment,"`+godNamewithGoodCaps+`( |,|;)") || regex(?abstract,"`+godNamewithGoodCaps+`( |,|;)") ) )
         }
         `
+        */
+
+
+
     var encodedGeneralQuery = URL + gQuery + suffix
     var encodedSiblingsQuery = URL+encodeURI(siblingsQuery)+suffix
     var encodedSymbolsQuery = URL+encodeURI(symbolsQuery)+suffix
@@ -236,6 +294,9 @@ function getGodsInfo() {
     var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
     var encodedConsortsQuery2 = URL + encodeURI(consortsQuery2) + suffix
     var encodedGamesQuery = URL + encodeURI(gamesQuery) + suffix
+
+
+
 
     $.ajax({ 
         url: encodedGeneralQuery, 
