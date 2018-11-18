@@ -5,6 +5,7 @@ Le projet de Web sémantique pour rassembler des données sur des divinités gre
 ## Getting Started
 
 Pour tester le projet il suffit d'ouvrir index.html dans un navigateur avec la console.
+Pour lancer le serveur, faire nodemon . dans le répertoire du projet.
 
 ### Prerequisites
 
@@ -16,9 +17,10 @@ Aucune installation.
 
 ## Built With
 
-* [HTML]
-* [Javascript]
-* [JQuery]
+* HTML
+* Javascript
+* JQuery
+* Node
 
 ## Authors
 
