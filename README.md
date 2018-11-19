@@ -4,8 +4,10 @@ Le projet de Web sémantique pour rassembler des données sur des divinités gre
 
 ## Getting Started
 
-Pour tester le projet il suffit d'ouvrir index.html dans un navigateur avec la console.
-Pour lancer le serveur, faire nodemon . dans le répertoire du projet.
+-Pour tester le projet il suffit d'ouvrir index.html dans un navigateur avec la console.
+
+-Faire npm install pour installer les dépendances node.
+Pour lancer le serveur, faire nodemon . dans le répertoire du projet. 
 
 ### Prerequisites
 
