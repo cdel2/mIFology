@@ -23,7 +23,7 @@ function getGodsInfo() {
 
 
     //Display loading while data is loading
-    document.getElementById('godImage').src = "LoadingImage.jpg"
+    document.getElementById('godImage').src = "../style/img/LoadingImage.jpg"
     document.getElementById('godGender').innerHTML = "Loading..";
     document.getElementById('godAbode').innerHTML= "Loading..";
     document.getElementById('godSiblings').innerHTML= "Loading..";
@@ -336,7 +336,7 @@ function getGodsInfo() {
             if (gender.length == 0) document.getElementById('godGender').innerHTML = "No Gender found";
             else document.getElementById('godGender').innerHTML = gender;
 
-            if (image.length == 0) document.getElementById('godImage').src = "imageNotFound.png"
+            if (image.length == 0) document.getElementById('godImage').src = "../style/img/imageNotFound.png"
             else {
                 document.getElementById('godImage').src = image;
                 document.getElementById('godImage').alt = godNamewithGoodCaps;
