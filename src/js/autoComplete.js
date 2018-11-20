@@ -20,12 +20,22 @@ function autoComplete() {
         dataType: "jsonp", 
         url: allGodsQuery, 
         success: function(data) {
-            
-            for (var i = 0; i < data.results.bindings.length; i++) {
+
+            for(var i = 0; i < data.results.bindings.length; i++) {
                 godsArray.push(data.results.bindings[i]["callret-0"].value);
+                godsArray.sort(function(a, b){
+                    if(a < b) { return -1; }
+                    if(a > b) { return 1; }
+                    return 0;
+                })
+            }
+            
+            for (var i = 0; i < godsArray.length; i++) {
+                
                 //console.log("element i", godsArray[i])
                 var node = document.createElement("OPTION");                 // Create a <li> node
-                var textnode = document.createTextNode(data.results.bindings[i]["callret-0"].value);         // Create a text node
+                //var textnode = document.createTextNode(data.results.bindings[i]["callret-0"].value);         // Create a text node
+                var textnode = document.createTextNode(godsArray[i]);
                 node.appendChild(textnode);                              // Append the text to <li>
                 document.getElementById("godsNames").appendChild(node);     // Append <li> to <ul> with 
 
