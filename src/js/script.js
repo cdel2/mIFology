@@ -451,4 +451,141 @@ function getGodsInfo() {
            else document.getElementById('godMovies').innerHTML = movies;
         }
     });
+/*
+    var divConsort = "<div class=\"generation\" id=\"parents\">";
+    $.ajax({ 
+        url: encodedConsortsQuery, 
+        success: function(result) {
+            var results = result.results.bindings; 
+            for (var res in results) {
+                consort = results[res].Consorts.value
+                if (consorts.indexOf(" " + consort) === -1)
+                {
+                    consorts.push(" " + consort)
+                    var commonChild = commonChildren($("#GodName").val(), consort);
+                    divConsort+="<div class=\"card-m\">"+consort+"</div><div >"+commonChild+"</div>";
+                }
+            }
+        } 
+    }).then($.ajax({ 
+        url: encodedConsortsQuery2, 
+        success: function(result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                consort = results[res].Consort.value
+                if (consorts.indexOf(" " + consort) === -1) 
+                {
+                consorts.push(" " + consort)
+                divConsort+="<div class=\"card-m\">"+consort+"</div>";
+                }
+            }
+            divConsort+="</div>";
+            document.getElementById('consorts').innerHTML=divConsort;
+            document.getElementById('godConsorts').innerHTML=consorts;
+        } 
+    }))
+}
+
+function commonChildren(papa, maman) {
+    var script = document.createElement('script');
+
+    var URL = 'https://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=';
+    var suffix = '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+';
+    var childrenPapa = []
+    var childrenMaman = []
+
+    var childrenPapaQuery = `
+        SELECT DISTINCT STR(?child) as ?Children
+        WHERE {
+        ?uri dbp:name ?n;
+        dbp:godOf ?go;
+        dbp:type ?t.
+        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ papa + `( |$)","i"))
+
+        {
+            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30}
+            ?uri dbp:children ?childrenStr.
+            FILTER(!isBlank(?childrenStr)  and isLiteral(?childrenStr))
+            BIND(replace(?childrenStr, " and ", " ") as ?childStr)
+            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
+            BIND (replace(replace(?childStr, ?skipN, ""), ",.*$", "") AS ?child)
+        }
+        UNION
+        {
+            {?uri dbp:children ?children.}
+            UNION
+            {?children dbp:parents ?uri.}
+
+            ?children dbp:type ?t;
+            dbp:name ?child.
+
+            Filter(isLiteral(?child))
+        }
+        }
+    `
+
+
+    var childrenMamanQuery = `
+        SELECT DISTINCT STR(?child) as ?Children
+        WHERE {
+        ?uri dbp:name ?n;
+        dbp:godOf ?go;
+        dbp:type ?t.
+        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ maman + `( |$)","i"))
+
+        {
+            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30}
+            ?uri dbp:children ?childrenStr.
+            FILTER(!isBlank(?childrenStr)  and isLiteral(?childrenStr))
+            BIND(replace(?childrenStr, " and ", " ") as ?childStr)
+            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
+            BIND (replace(replace(?childStr, ?skipN, ""), ",.*$", "") AS ?child)
+        }
+        UNION
+        {
+            {?uri dbp:children ?children.}
+            UNION
+            {?children dbp:parents ?uri.}
+
+            ?children dbp:type ?t;
+            dbp:name ?child.
+
+            Filter(isLiteral(?child))
+        }
+        }
+    `
+
+    var encodedChildrenPapaQuery = URL + encodeURI(childrenPapaQuery) + suffix
+    var encodedChildrenMamanQuery = URL + encodeURI(childrenMamanQuery) + suffix
+
+    $.ajax({
+        url: encodedChildrenPapaQuery,
+        success: function (result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                console.log(child)
+                child = results[res].Children.value
+                if (childrenPapa.indexOf(" " + child) === -1) childrenPapa.push(" " + child)
+            }
+            console.log(childrenPapa)
+        }
+    }).then($.ajax({
+        url: encodedChildrenMamanQuery,
+        success: function (result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                console.log(child)
+                child = results[res].Children.value
+                if (childrenMaman.indexOf(" " + child) === -1) childrenMaman.push(" " + child)
+            }
+            var commonChildren = childrenPapa.filter(value => -1 !== childrenMaman.indexOf(value));
+            console.log(commonChildren)
+        }
+    }));
+
+    return commonChildren;
+
+}*/
+
+
 }
