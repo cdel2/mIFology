@@ -1,0 +1,307 @@
+/* Color palette used -
+http://www.color-hex.com/color-palette/63826 */
+@import url("https://fonts.googleapis.com/css?family=Dancing+Script:700|Roboto:300,400");
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background-color: #f0f0e8;
+}
+
+body {
+  background-color: #f0f0e8;
+  font-family: 'Roboto', cursive;
+  font-size: 14px;
+  width: 60%;
+  text-align: center;
+  margin: auto;
+}
+
+h1 {
+  color: #41669d;
+  font-family: 'Dancing Script', cursive;
+  font-size: 60px;
+  margin: 20px 0px 30px;
+  text-align: center;
+}
+h1 span {
+  display: block;
+  font-size: 25px;
+  color: #aab4af;
+}
+
+@media screen and (max-width: 400px) {
+  h1 {
+    font-size: 40px;
+  }
+
+  h1 span {
+    font-size: 20px;
+  }
+}
+#familyTree *:before, #familyTree *:after {
+  content: "";
+  position: absolute;
+}
+#familyTree [class^="card"], #familyTree .pair, #familyTree .generation {
+  position: relative;
+}
+#familyTree .generation {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 20px;
+}
+#familyTree .generation .pair {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-negative: 1;
+  flex-shrink: 1;
+  -ms-flex-preferred-size: 0%;
+  flex-basis: 0%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+#familyTree .generation:last-of-type {
+  margin-bottom: 0;
+}
+#familyTree [class^="card"] {
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-negative: 1;
+  flex-shrink: 1;
+  -ms-flex-preferred-size: 0%;
+  flex-basis: 0%;
+  padding: 10px;
+  border-radius: 3px;
+  margin: 10px;
+  color: #212c3c;
+}
+#familyTree .card-m {
+  background-color: #b8c9df;
+}
+#familyTree .card-f {
+  background-color: #dfb8d4;
+}
+#familyTree .pair:after {
+  width: calc(50% - 2px);
+  border: 2px solid #c6d1cb;
+  border-top: 0;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  right: 0;
+  left: 0;
+  margin: auto;
+  top: calc(100% + 20px / 2 - 3px);
+  height: 3px;
+}
+#familyTree [class^="card"]:before, #familyTree [class^="card"]:after {
+  right: 0;
+  left: 0;
+  width: 0;
+  margin: auto;
+  border-left: 2px solid #c6d1cb;
+  height: calc(10px + 20px / 2);
+}
+#familyTree [class^="card"]:before {
+  bottom: 100%;
+}
+#familyTree [class^="card"]:after {
+  top: 100%;
+}
+#familyTree #grandParents [class^="card"]:before, #familyTree #child [class^="card"]:after {
+  border: 0;
+  opacity: 0;
+}
+
+@media screen and (max-width: 700px) {
+  #familyTree #grandParents:before, #familyTree #grandParents:after {
+    border-top: 2px solid #c6d1cb;
+    height: calc(50% + 20px);
+    width: 10px;
+    top: 50%;
+  }
+  #familyTree #grandParents:before {
+    opacity: 1;
+    border-left: 2px solid #c6d1cb;
+    right: calc(100% + 3px);
+    border-top-left-radius: 3px;
+  }
+  #familyTree #grandParents:after {
+    border-right: 2px solid #c6d1cb;
+    left: calc(100% + 3px);
+    border-top-right-radius: 3px;
+  }
+  #familyTree #grandParents .pair {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  #familyTree #grandParents .pair:after {
+    border: 0;
+  }
+  #familyTree #grandParents [class^="card"]:before {
+    border-bottom: 2px solid #c6d1cb !important;
+    width: 10px;
+    height: 0;
+  }
+  #familyTree #grandParents [class^="card"]:after {
+    width: calc(3px + 10px);
+    height: calc(50% + 10px + 3px * 2);
+  }
+  #familyTree #grandParents [class^="card"]:first-child:before {
+    top: 50%;
+    bottom: auto;
+  }
+  #familyTree #grandParents [class^="card"]:first-child:after {
+    border-top: 2px solid #c6d1cb;
+    top: 50%;
+    bottom: auto;
+  }
+  #familyTree #grandParents [class^="card"]:last-child:before {
+    bottom: 50%;
+    top: auto;
+  }
+  #familyTree #grandParents [class^="card"]:last-child:last-child:after {
+    border-bottom: 2px solid #c6d1cb;
+    bottom: 50%;
+    top: auto;
+  }
+  #familyTree #grandParents .pair:first-child [class^="card"]:before {
+    left: -10px;
+    right: auto;
+  }
+  #familyTree #grandParents .pair:first-child [class^="card"]:after {
+    left: auto;
+    right: 100%;
+  }
+  #familyTree #grandParents .pair:first-child [class^="card"]:first-child:after {
+    border-top-left-radius: 3px;
+  }
+  #familyTree #grandParents .pair:first-child [class^="card"]:last-child:after {
+    border-bottom-left-radius: 3px;
+  }
+  #familyTree #grandParents .pair:last-child [class^="card"]:before {
+    right: -10px;
+    left: auto;
+  }
+  #familyTree #grandParents .pair:last-child [class^="card"]:after {
+    left: 100%;
+    right: auto;
+    border-left: 0;
+    border-right: 2px solid #c6d1cb;
+  }
+  #familyTree #grandParents .pair:last-child [class^="card"]:first-child:after {
+    border-top-right-radius: 3px;
+  }
+  #familyTree #grandParents .pair:last-child [class^="card"]:last-child:after {
+    border-bottom-right-radius: 3px;
+  }
+
+  #familyTree #parents [class^="card"]:before {
+    border-bottom: 2px solid #c6d1cb;
+    width: calc(10px * 2 + 3px);
+    bottom: 50%;
+    height: calc(50% + 10px);
+  }
+  #familyTree #parents [class^="card"]:first-child:before {
+    right: 100%;
+    left: auto;
+    border-bottom-left-radius: 3px;
+  }
+  #familyTree #parents [class^="card"]:last-child:before {
+    border-left: 0;
+    border-right: 2px solid #c6d1cb;
+    left: 100%;
+    border-bottom-right-radius: 3px;
+  }
+}
+@media screen and (max-width: 400px) {
+  #familyTree #grandParents {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  #familyTree #grandParents:before {
+    top: 25%;
+    height: calc(75% + 20px);
+  }
+  #familyTree #grandParents:after {
+    top: 75%;
+    height: calc(25% + 20px);
+  }
+
+  #familyTree #parents:after {
+    border-left: 2px solid #c6d1cb;
+    border-top: 2px solid #c6d1cb;
+    border-top-left-radius: 3px;
+    height: calc(50% + 20px);
+    width: 10px;
+    right: calc(100% + 3px);
+    top: 50%;
+  }
+  #familyTree #parents .pair {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+  #familyTree #parents .pair:after {
+    border: 0;
+    height: 0;
+    opacity: 0;
+  }
+  #familyTree #parents [class^="card"]:after {
+    right: 100%;
+    left: auto;
+    width: calc(3px + 10px);
+  }
+  #familyTree #parents [class^="card"]:first-child:before {
+    height: 90%;
+    bottom: 60%;
+  }
+  #familyTree #parents [class^="card"]:first-child:after {
+    border-top: 2px solid #c6d1cb;
+    height: calc(40% + 10px);
+    top: 60%;
+    border-top-left-radius: 3px;
+  }
+  #familyTree #parents [class^="card"]:last-child:before {
+    height: calc(150% + 10px* 3);
+  }
+  #familyTree #parents [class^="card"]:last-child:after {
+    border-bottom: 2px solid #c6d1cb;
+    height: calc(50% + 10px);
+    bottom: 50%;
+    top: auto;
+    border-bottom-left-radius: 3px;
+  }
+
+  #familyTree #child:before {
+    border-left: 2px solid #c6d1cb;
+    border-bottom: 2px solid #c6d1cb;
+    border-bottom-left-radius: 3px;
+    height: 100%;
+    bottom: 50%;
+    right: calc(100% - 10px);
+    left: auto;
+    width: calc(3px + 10px * 2);
+  }
+  #familyTree #child [class^="card"]:before {
+    border: 0;
+    height: 0;
+    opacity: 0;
+  }
+}
