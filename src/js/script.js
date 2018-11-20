@@ -328,7 +328,11 @@ function getGodsInfo() {
             }
 
             if (nameOfGod.length == 0) document.getElementById('godName').innerHTML = "No name found";
-            else document.getElementById('godName').innerHTML = godNamewithGoodCaps;
+            else {
+                document.getElementById('godName').innerHTML = godNamewithGoodCaps;
+                document.getElementById('MyGod').innerHTML=$("#GodName").val();
+            }
+            
             if (godOf.length == 0) document.getElementById('godFunction').innerHTML = "No function found";
             else document.getElementById('godFunction').innerHTML = godOf;
 
