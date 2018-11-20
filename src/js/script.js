@@ -329,7 +329,6 @@ function getGodsInfo() {
 
             if (nameOfGod.length == 0) document.getElementById('godName').innerHTML = "No name found";
             else document.getElementById('godName').innerHTML = godNamewithGoodCaps;
-
             if (godOf.length == 0) document.getElementById('godFunction').innerHTML = "No function found";
             else document.getElementById('godFunction').innerHTML = godOf;
 
@@ -385,19 +384,21 @@ function getGodsInfo() {
             else document.getElementById('godChildren').innerHTML=children;
         } 
     }); 
-        
     $.ajax({ 
         url: encodedParentsQuery, 
         success: function(result) {
             var results = result.results.bindings; 
             for (var res in results) {
                 parent = results[res].parent.value
+                Mom = results[0].parent.value
+                Dad = results[1].parent.value
                 if (parents.indexOf(" " + parent) === -1) parents.push(" " + parent)
             }
-            if (parents.length == 0) document.getElementById('godParents').innerHTML = "No parents found";
-            else document.getElementById('godParents').innerHTML=parents;
+            document.getElementById('godParents').innerHTML=parents;
+            document.getElementById('Mom').innerHTML=Mom;
+            document.getElementById('Dad').innerHTML=Dad;
         } 
-    }); 
+    });     
         
     $.ajax({
         url: encodedConsortsQuery,
