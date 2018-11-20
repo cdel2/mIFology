@@ -13,7 +13,6 @@ function getGodsInfo() {
 
     //Function to maje the tab visible
     document.getElementById("resultTable").style.display = "initial";
-    document.getElementById("familyTree").style.display = "initial";
     document.getElementById("homePic").style.display = "none";
 
     //Transform the name of the god with the good capital letters
@@ -28,10 +27,13 @@ function getGodsInfo() {
     console.log(godsArray)
     if (godsArray.indexOf(godNamewithGoodCaps) !== -1) {
         document.getElementById("resultTable").style.display="block";
+        document.getElementById("familyTree").style.display = "initial";
         document.getElementById("noGodFound").style.display="none";
+
     }
     if (godsArray.indexOf(godNamewithGoodCaps) === -1) {
         document.getElementById("resultTable").style.display="none";
+        document.getElementById("familyTree").style.display = "none";
         document.getElementById("noGodFound").style.display="block";
     }
 
