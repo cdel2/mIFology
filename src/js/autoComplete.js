@@ -22,13 +22,14 @@ function autoComplete() {
         success: function(data) {
 
             for(var i = 0; i < data.results.bindings.length; i++) {
-                godsArray.push(data.results.bindings[i]["callret-0"].value);
-                godsArray.sort(function(a, b){
+                godsArray.push(data.results.bindings[i]["callret-0"].value);               
+            }
+
+            godsArray.sort(function(a, b){
                     if(a < b) { return -1; }
                     if(a > b) { return 1; }
                     return 0;
                 })
-            }
             
             for (var i = 0; i < godsArray.length; i++) {
                 

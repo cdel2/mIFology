@@ -20,8 +20,8 @@
 		
 		<div class="search-container">
 			<div class="topnav">
-				<a class="active" href="#home">Mythologie</a>
-				<a href="#about">Moteur de recherche pour les personnages mythologiques de la grèce antique</a>  
+				<a class="active" href="#home" onclick="hideTab()">Mythologie</a>
+				<a href="#about" id="homeButton">Moteur de recherche pour les personnages mythologiques de la grèce antique</a>  
 			</div>
 
 			<div class="ui-widget">
@@ -35,6 +35,10 @@
 		</div>
 		
 		<br>
+
+		<div id="homePic">
+			<img src="style/img/homePic.jpg" style="height:60vh; margin-top: 7vh">
+		</div>
 
 		<div id="resultTable"  style="display:none;">
 			<table style="width:70%" align="center">
@@ -93,7 +97,7 @@
 			</table>
 		</div>
 
-		<div id="familyTree">
+		<div id="familyTree" style="display:none;">
 			<div class="generation" id="grandParents">
 				<div class="pair">
 					<div class="card-m" id="Mom"></div>
