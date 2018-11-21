@@ -23,7 +23,7 @@ function getGodsInfo() {
 
 
     //Display loading while data is loading
-    document.getElementById('godImage').src = "../style/img/LoadingImage.jpg"
+    document.getElementById('godImage').src = "./style/img/LoadingImage.jpg"
     document.getElementById('godGender').innerHTML = "Loading..";
     document.getElementById('godAbode').innerHTML= "Loading..";
     document.getElementById('godSiblings').innerHTML= "Loading..";
@@ -339,7 +339,7 @@ function getGodsInfo() {
             if (gender.length == 0) document.getElementById('godGender').innerHTML = "No Gender found";
             else document.getElementById('godGender').innerHTML = gender;
 
-            if (image.length == 0) document.getElementById('godImage').src = "../style/img/imageNotFound.png"
+            if (image.length == 0) document.getElementById('godImage').src = "./style/img/imageNotFound.png"
             else {
                 document.getElementById('godImage').src = image;
                 document.getElementById('godImage').alt = godNamewithGoodCaps;
@@ -451,48 +451,16 @@ function getGodsInfo() {
            else document.getElementById('godMovies').innerHTML = movies;
         }
     });
-/*
-    var divConsort = "<div class=\"generation\" id=\"parents\">";
-    $.ajax({ 
-        url: encodedConsortsQuery, 
-        success: function(result) {
-            var results = result.results.bindings; 
-            for (var res in results) {
-                consort = results[res].Consorts.value
-                if (consorts.indexOf(" " + consort) === -1)
-                {
-                    consorts.push(" " + consort)
-                    var commonChild = commonChildren($("#GodName").val(), consort);
-                    divConsort+="<div class=\"card-m\">"+consort+"</div><div >"+commonChild+"</div>";
-                }
-            }
-        } 
-    }).then($.ajax({ 
-        url: encodedConsortsQuery2, 
-        success: function(result) {
-            var results = result.results.bindings;
-            for (var res in results) {
-                consort = results[res].Consort.value
-                if (consorts.indexOf(" " + consort) === -1) 
-                {
-                consorts.push(" " + consort)
-                divConsort+="<div class=\"card-m\">"+consort+"</div>";
-                }
-            }
-            divConsort+="</div>";
-            document.getElementById('consorts').innerHTML=divConsort;
-            document.getElementById('godConsorts').innerHTML=consorts;
-        } 
-    }))
+
+    updateTree($("#GodName").val())
 }
 
-function commonChildren(papa, maman) {
-    var script = document.createElement('script');
+function updateTree(god) {
 
     var URL = 'https://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=';
     var suffix = '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+';
+    var consorts = []
     var childrenPapa = []
-    var childrenMaman = []
 
     var childrenPapaQuery = `
         SELECT DISTINCT STR(?child) as ?Children
@@ -500,7 +468,7 @@ function commonChildren(papa, maman) {
         ?uri dbp:name ?n;
         dbp:godOf ?go;
         dbp:type ?t.
-        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ papa + `( |$)","i"))
+        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ god + `( |$)","i"))
 
         {
             VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30}
@@ -523,6 +491,76 @@ function commonChildren(papa, maman) {
         }
         }
     `
+
+    var consortsQuery = `
+        SELECT DISTINCT STR(?consort) as ?Consorts
+        WHERE {
+        {
+            ?uri dbp:name ?n;
+            dbp:godOf ?go;
+            dbp:type ?t.
+            FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+god+`( |$)","i"))
+            ?consortRes dbp:consort ?ourGod;
+            dbp:type ?t.
+            FILTER(!isBlank(?ourGod) and isLiteral(?ourGod))
+            VALUES ?N1 { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20} 
+            BIND(replace(?ourGod, " and ", " ") as ?ourGodStr)
+            BIND (concat("^([^,]*,){", str(?N1) ,"} *") AS ?skipN1)
+            BIND (replace(replace(?ourGodStr, ?skipN1, ""), ",.*$", "") AS ?ourGodName)
+            FILTER(regex(?ourGodName, ?n, "i"))
+            ?consortRes dbp:name ?consort.
+        }
+        UNION 
+        {
+            ?uri dbp:name ?n;
+            dbp:godOf ?go;
+            dbp:type ?t.
+            FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+god+`( |$)","i"))
+            ?consortRes dbp:consort ?ourGod;
+            dbp:type ?t.   
+            ?ourGod dbp:type ?t;
+            dbp:name ?ourGodName.
+            FILTER(regex(?ourGodName, ?n, "i"))
+            ?consortRes dbp:name ?consort.
+        }
+        }`
+        
+    var encodedChildrenPapaQuery = URL + encodeURI(childrenPapaQuery) + suffix
+    var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
+
+    var divConsort = "<div class=\"generation\" id=\"parents\">";
+    
+    $.ajax({
+        url: encodedChildrenPapaQuery,
+        success: function (result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                child = results[res].Children.value
+                if (childrenPapa.indexOf(child) === -1) childrenPapa.push(child)
+            }
+        }
+    }).then($.ajax({ 
+        url: encodedConsortsQuery, 
+        success: function(result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                consort = results[res].Consorts.value
+                if (consorts.indexOf(consort) === -1) {
+                    consorts.push(consort);
+                    divConsort+="<div id=\""+consort+"\" class=\"card\"><div class=\"card-m\">"+consort+"</div><div id=\""+consort+"Children\"></div></div>"
+                    findCommonChild(god, consort, childrenPapa)
+                }
+            }
+            divConsort+="</div>";
+            document.getElementById('consorts').innerHTML=divConsort;
+        } 
+    }))
+}
+
+function findCommonChild(god, consort, childrenPapa) {
+    var URL = 'https://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=';
+    var suffix = '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+';
+    var childrenMaman = []
 
 
     var childrenMamanQuery = `
@@ -531,7 +569,7 @@ function commonChildren(papa, maman) {
         ?uri dbp:name ?n;
         dbp:godOf ?go;
         dbp:type ?t.
-        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ maman + `( |$)","i"))
+        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ consort + `( |$)","i"))
 
         {
             VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30}
@@ -555,37 +593,23 @@ function commonChildren(papa, maman) {
         }
     `
 
-    var encodedChildrenPapaQuery = URL + encodeURI(childrenPapaQuery) + suffix
     var encodedChildrenMamanQuery = URL + encodeURI(childrenMamanQuery) + suffix
+    var divChildren = "<div class=\"generation\" id=\"parents\">";
 
     $.ajax({
-        url: encodedChildrenPapaQuery,
-        success: function (result) {
-            var results = result.results.bindings;
-            for (var res in results) {
-                console.log(child)
-                child = results[res].Children.value
-                if (childrenPapa.indexOf(" " + child) === -1) childrenPapa.push(" " + child)
-            }
-            console.log(childrenPapa)
-        }
-    }).then($.ajax({
         url: encodedChildrenMamanQuery,
         success: function (result) {
             var results = result.results.bindings;
             for (var res in results) {
-                console.log(child)
                 child = results[res].Children.value
-                if (childrenMaman.indexOf(" " + child) === -1) childrenMaman.push(" " + child)
+                if (childrenMaman.indexOf(child) === -1) childrenMaman.push(child)
             }
             var commonChildren = childrenPapa.filter(value => -1 !== childrenMaman.indexOf(value));
-            console.log(commonChildren)
+            for(child in commonChildren) {
+                divChildren+="<div class=\"card-child\">"+commonChildren[child]+"</div><br>"
+            }
+            divChildren+="</div>";
+            document.getElementById(consort+"Children").innerHTML=divChildren;
         }
-    }));
-
-    return commonChildren;
-
-}*/
-
-
+    })
 }
