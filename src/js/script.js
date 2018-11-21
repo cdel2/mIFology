@@ -232,7 +232,7 @@ function getGodsInfo() {
             dbp:type ?t.   
             ?ourGod dbp:type ?t;
             dbp:name ?ourGodName.
-            FILTER(regex(?ourGodName, ?n, "i"))
+            FILTER(regex(?ourGodName, CONCAT(?n,"( |$)"), "i"))
             ?consortRes dbp:name ?consort.
         }
         }`
@@ -245,7 +245,7 @@ function getGodsInfo() {
         Filter(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)"))
 
         {
-            VALUES ?N { 1 2 3 4} 
+            VALUES ?N { 1 2 3 4 5 6 7 8 9 10} 
             ?uri dbp:consort ?consorts.
             FILTER(!isBlank(?consorts) and isLiteral(?consorts))
             BIND(replace(?consorts, " and ", ",") as ?consortStr)
