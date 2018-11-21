@@ -358,11 +358,7 @@ function getGodsInfo() {
             if (gender.length == 0) document.getElementById('godGender').innerHTML = "No Gender found";
             else document.getElementById('godGender').innerHTML = gender;
 
-<<<<<<< HEAD
-            if (image.length == 0) document.getElementById('godImage').src = "./style/img/imageNotFound.png"
-=======
             if (image.length == 0) document.getElementById('godImage').src = "style/img/imageNotFound.png"
->>>>>>> dfc8188a2bfb84828cb8c370341f7644bced11db
             else {
                 document.getElementById('godImage').src = image;
                 document.getElementById('godImage').alt = godNamewithGoodCaps;
