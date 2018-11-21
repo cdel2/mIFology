@@ -1,6 +1,19 @@
 var godsArray = []
 
+function hideTab(){
+    //Function to hide the tab when the home button is clicked
+    document.getElementById("resultTable").style.display = "none";
+    document.getElementById("familyTree").style.display = "none";
+    document.getElementById("GodName").value = "";
+    document.getElementById("homePic").style.display = "initial";
+}
+
+
 function getGodsInfo() {
+
+    //Function to maje the tab visible
+    document.getElementById("resultTable").style.display = "initial";
+    document.getElementById("homePic").style.display = "none";
 
     //Transform the name of the god with the good capital letters
 
@@ -14,12 +27,18 @@ function getGodsInfo() {
     console.log(godsArray)
     if (godsArray.indexOf(godNamewithGoodCaps) !== -1) {
         document.getElementById("resultTable").style.display="block";
+        document.getElementById("familyTree").style.display = "initial";
         document.getElementById("noGodFound").style.display="none";
+
     }
     if (godsArray.indexOf(godNamewithGoodCaps) === -1) {
         document.getElementById("resultTable").style.display="none";
+        document.getElementById("familyTree").style.display = "none";
         document.getElementById("noGodFound").style.display="block";
     }
+
+
+    
 
 
     //Display loading while data is loading
@@ -339,7 +358,11 @@ function getGodsInfo() {
             if (gender.length == 0) document.getElementById('godGender').innerHTML = "No Gender found";
             else document.getElementById('godGender').innerHTML = gender;
 
+<<<<<<< HEAD
             if (image.length == 0) document.getElementById('godImage').src = "./style/img/imageNotFound.png"
+=======
+            if (image.length == 0) document.getElementById('godImage').src = "style/img/imageNotFound.png"
+>>>>>>> dfc8188a2bfb84828cb8c370341f7644bced11db
             else {
                 document.getElementById('godImage').src = image;
                 document.getElementById('godImage').alt = godNamewithGoodCaps;
