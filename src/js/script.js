@@ -77,63 +77,63 @@ function getGodsInfo() {
     var generalQuery = `
         select ?uri as ?resource, STR(?n) as ?nameOfGod, ?image, STR(?go) as ?GodOf,STR(?abode) as ?Abode, if(EXISTS{?uri foaf:gender ?ge}, STR(?ge),(if(regex(?GodOf,".*God .*","i"), "Male",(if(regex(?GodOf,".*Goddess .*","i"), "Female","Not specified"))))) as ?Gender where {
 
-   ?uri dbp:name ?n;
-   dbp:type ?t.
-   
-   Filter(regex(?t,".*Greek.*") and datatype(?n)=rdf:langString and regex(?n, ".*`+godNamewithGoodCaps+`(_| |$)"))
-  
-   {
-    ?uri dbp:godOf ?go.
-    FILTER(isLiteral(?go))
-   }
-   UNION
-   {
-    ?uri dbp:godOf ?goresource.
-    ?goresource rdfs:label ?go.
-    FILTER(isLiteral(?go) and lang(?go)="en")
-   }
-   
-   optional{?uri dbo:thumbnail ?image}.
+    ?uri dbp:name ?n;
+    dbp:type ?t.
+    
+    Filter(regex(?t,".*Greek.*") and datatype(?n)=rdf:langString and regex(?n, ".*`+godNamewithGoodCaps+`(_| |$)"))
+    
+    {
+        ?uri dbp:godOf ?go.
+        FILTER(isLiteral(?go))
+    }
+    UNION
+    {
+        ?uri dbp:godOf ?goresource.
+        ?goresource rdfs:label ?go.
+        FILTER(isLiteral(?go) and lang(?go)="en")
+    }
+    
+    optional{?uri dbo:thumbnail ?image}.
 
-   
-   optional{
-      ?uri dbp:abode ?a. 
-      ?a rdfs:label ?abode.
-      FILTER(lang(?abode)="en")
-   }.
-  
-   optional{?uri foaf:gender ?ge}.
-}
-    `
-    var siblingsQuery = `
-        SELECT DISTINCT STR(?sibling) as ?Sibling
-        WHERE {
-        ?uri dbp:name ?n;
-        dbp:godOf ?go;
-        dbp:type ?t.
-        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
-
-        {
-        VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30} 
-        ?uri dbp:siblings ?siblings.
-        FILTER(!isBlank(?siblings) and isLiteral(?siblings))
-        BIND(replace(?siblings, " and ", " ") as ?sibStr)
-        BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
-        BIND (replace(replace(?sibStr, ?skipN, ""), ",.*$", "") AS ?sibling)
-        }
-        UNION 
-        {
-            {?uri dbp:siblings ?siblings.}
-            UNION
-            {?siblings dbp:siblings ?uri.}
-
-            ?siblings dbp:godOf ?go2;
-            dbp:type ?t;
-            dbp:name ?sibling.
-            
-            Filter(isLiteral(?sibling))
-        }}
+    
+    optional{
+        ?uri dbp:abode ?a. 
+        ?a rdfs:label ?abode.
+        FILTER(lang(?abode)="en")
+    }.
+    
+    optional{?uri foaf:gender ?ge}.
+    }
         `
+        var siblingsQuery = `
+            SELECT DISTINCT STR(?sibling) as ?Sibling
+            WHERE {
+            ?uri dbp:name ?n;
+            dbp:godOf ?go;
+            dbp:type ?t.
+            FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
+
+            {
+            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30} 
+            ?uri dbp:siblings ?siblings.
+            FILTER(!isBlank(?siblings) and isLiteral(?siblings))
+            BIND(replace(?siblings, " and ", " ") as ?sibStr)
+            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
+            BIND (replace(replace(?sibStr, ?skipN, ""), ",.*$", "") AS ?sibling)
+            }
+            UNION 
+            {
+                {?uri dbp:siblings ?siblings.}
+                UNION
+                {?siblings dbp:siblings ?uri.}
+
+                ?siblings dbp:godOf ?go2;
+                dbp:type ?t;
+                dbp:name ?sibling.
+                
+                Filter(isLiteral(?sibling))
+            }}
+            `
 
     var symbolsQuery = `
         select DISTINCT STR(?symbol) as ?Symbol where {
@@ -180,8 +180,40 @@ function getGodsInfo() {
          Filter(isLiteral(?child) and lang(?child)="en")
       }  
     }
-    
     `
+
+    var childrenQuery2 = `
+    SELECT DISTINCT STR(?child) as ?Children
+    WHERE {
+    {
+        ?uri dbp:name ?n;
+        dbp:godOf ?go;
+        dbp:type ?t3.
+        FILTER(regex(?t3,".*Greek.*") and regex(?n,".*Zeus( |$)","i"))
+        ?childRes dbp:parents ?parents;
+        dbp:type ?t3.
+        FILTER(!isBlank(?parents) and isLiteral(?parents))
+        VALUES ?N1 { 1 2 3 4}
+        BIND(replace(?parents, " and ", " ") as ?parentStr)
+        BIND (concat("^([^,]*,){", str(?N1) ,"} *") AS ?skipN1)
+        BIND (replace(replace(?parentStr, ?skipN1, ""), ",.*$", "") AS ?parent)
+        FILTER(regex(?parent, ?n))
+        ?childRes dbp:name ?child.
+        FILTER( datatype(?child)=rdf:langString)
+    }
+    UNION 
+    {
+        ?childRes dbp:parents ?parents;
+        dbp:type ?t3.   
+        ?parents dbp:type ?t3;
+        dbp:name ?parentName.
+        FILTER(regex(?parentName, ".*Zeus( |$)", "i"))
+        ?childRes dbp:name ?child.
+        FILTER( datatype(?child)=rdf:langString)
+    }
+    }
+    `
+
     var parentsQuery = `
         select DISTINCT ?parent  where 
         {
@@ -305,12 +337,13 @@ function getGodsInfo() {
 
         `
 
-
+        
 
     var encodedGeneralQuery = URL + encodeURI(generalQuery) + suffix
     var encodedSiblingsQuery = URL+encodeURI(siblingsQuery)+suffix
     var encodedSymbolsQuery = URL+encodeURI(symbolsQuery)+suffix
     var encodedChildrenQuery = URL+encodeURI(childrenQuery)+suffix
+    var encodedChildrenQuery2 = URL+encodeURI(childrenQuery2)+suffix
     var encodedParentsQuery = URL+encodeURI(parentsQuery)+suffix
     var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
     var encodedConsortsQuery2 = URL + encodeURI(consortsQuery2) + suffix
@@ -368,7 +401,7 @@ function getGodsInfo() {
             else document.getElementById('godAbode').innerHTML=abode;
         } 
     }); 
-        
+    
     $.ajax({ 
         url: encodedSiblingsQuery, 
         success: function(result) {
@@ -403,10 +436,20 @@ function getGodsInfo() {
                 child = results[res].Children.value
                 if (children.indexOf(" " + child) === -1) children.push(" " + child)
             }
-            if (children.length == 0) document.getElementById('godChildren').innerHTML = "No children found";
-            else document.getElementById('godChildren').innerHTML=children;
         } 
-    }); 
+    }).then($.ajax({ 
+        url: encodedChildrenQuery2, 
+        success: function(result) {
+            var results = result.results.bindings; 
+            for (var res in results) {
+                sibling = results[res].Children.value
+                if (siblings.indexOf(" " + sibling) === -1) siblings.push(" " + sibling)
+            }
+            if (siblings.length == 0) document.getElementById('godSiblings').innerHTML = "No siblings found";
+            else document.getElementById('godSiblings').innerHTML=siblings;
+        } 
+    }))
+
     $.ajax({ 
         url: encodedParentsQuery, 
         success: function(result) {
