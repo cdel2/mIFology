@@ -269,28 +269,41 @@ function getGodsInfo() {
         }`
 
     var consortsQuery2 = `
-        select DISTINCT STR(?consort) as ?Consort where {
-        ?uri dbp:name ?n;
-        dbp:godOf ?go;
-        dbp:type ?t.
-        Filter(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)"))
-
-        {
-            VALUES ?N { 1 2 3 4 5 6 7 8 9 10} 
-            ?uri dbp:consort ?consorts.
-            FILTER(!isBlank(?consorts) and isLiteral(?consorts))
-            BIND(replace(?consorts, " and ", ",") as ?consortStr)
-            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
-            BIND (replace(replace(?consortStr, ?skipN, ""), ",.*$", "") AS ?consort)
-        }
-        UNION
-        {
-            ?uri dbp:consort ?consorts.
-            ?consorts dbp:type ?t;
-            dbp:name ?consort.
-        }
-        }
-    `
+    SELECT DISTINCT STR(?consort) as ?Consorts
+    WHERE {
+      {
+         ?uri dbp:name ?n;
+         dbp:godOf ?go;
+         dbp:type ?t.
+         FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
+    
+         ?consortRes dbp:consort ?ourGod;
+         dbp:type ?t.
+         FILTER(!isBlank(?ourGod) and isLiteral(?ourGod))
+    
+         VALUES ?N1 { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20}
+         BIND(replace(?ourGod, " and ", " ") as ?ourGodStr)
+         BIND (concat("^([^,]*,){", str(?N1) ,"} *") AS ?skipN1)
+         BIND (replace(replace(?ourGodStr, ?skipN1, ""), ",.*$", "") AS ?ourGodName)
+         FILTER(regex(?ourGodName, CONCAT(?n,"( |$)"), "i"))
+         ?consortRes dbp:name ?consort.
+      }
+      UNION 
+      {
+         ?uri dbp:name ?n;
+         dbp:godOf ?go;
+         dbp:type ?t.
+         FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
+         ?consortRes dbp:consort ?ourGod;
+         dbp:type ?t.   
+         ?ourGod dbp:type ?t;
+         dbp:name ?ourGodName.
+         FILTER(regex(?ourGodName, CONCAT(?n,"( |$)"), "i"))
+         ?consortRes dbp:name ?consort.
+      }
+    } 
+    
+        `
     
     var gamesQuery = `
         select distinct(STR(?label)) as ?game where {
@@ -470,6 +483,7 @@ function getGodsInfo() {
         success: function (result) {
             var results = result.results.bindings;
             for (var res in results) {
+                console.log(results)
                 consort = results[res].Consorts.value
                 if (consorts.indexOf(" " + consort) === -1) consorts.push(" " + consort)
             }
@@ -479,7 +493,7 @@ function getGodsInfo() {
         success: function (result) {
             var results = result.results.bindings;
             for (var res in results) {
-                consort = results[res].Consort.value
+                consort = results[res].Consorts.value
                 if (consorts.indexOf(" " + consort) === -1) consorts.push(" " + consort)
             }
             if (consorts.length == 0) document.getElementById('godConsorts').innerHTML = "No consorts found";
