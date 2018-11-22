@@ -51,6 +51,9 @@ function getGodsInfo() {
     document.getElementById('godConsorts').innerHTML = "Loading..";
     document.getElementById('godGames').innerHTML = "Loading..";
     document.getElementById('godMovies').innerHTML = "Loading..";
+    document.getElementById('godArtPieces').innerHTML = "Loading..";
+    document.getElementById('godName').innerHTML = "Loading..";
+
 
 
 
@@ -66,6 +69,7 @@ function getGodsInfo() {
     var consorts = []
     var games = []
     var movies = []
+    var artPieces = []
     var URL = 'https://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=';
     var suffix = '&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+';
     
@@ -306,35 +310,14 @@ function getGodsInfo() {
         `
     
     var gamesQuery = `
-        select distinct(STR(?label)) as ?game where {
-        ?uri ?b dbo:VideoGame.
-        ?uri rdfs:comment ?comment.
-        ?uri dbo:abstract ?abstract.
-        {
-            ?uri ?b2 dbc:Video_games_based_on_Greek_mythology.
-        }
-        UNION
-        {
-            ?uri ?b2 yago:WikicatMythology-basedVideoGames.
-        }
-        UNION
-        {
-            ?uri ?b2 dbc:Mythology-based_video_games
-        }
-        UNION
-        {
-            ?uri ?b2 dbc:Video_games_set_in_antiquity
-        }
-        UNION
-        {
-            ?uri rdfs:comment ?comment.
-            ?uri dbo:abstract ?abstract.
-            Filter(( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment,"(m|M)ytholog(y|ical)") || regex(?comment,"(G|g)reek") || regex(?abstract,"(m|M)ytholog(y|ical)") || regex(?abstract,"(G|g)reek") ) )
-        }
-        ?uri rdfs:label ?label.
-        Filter( lang(?label)="en" and ( lang(?comment)="en" and lang(?abstract)="en") and ( regex(?comment,"`+godNamewithGoodCaps+`( |,|;/\\\\.)") || regex(?abstract,"`+godNamewithGoodCaps+`( |,|;|\\\\.)") ) )
-
-        }
+       select Distinct(STR(?label)) as ?game where{
+      ?uri rdf:type dbo:VideoGame;
+           dbo:abstract ?abstract;
+           rdfs:label ?label;
+           dct:subject ?subject;
+           rdf:type ?type.
+      Filter(( lang(?label)="en" and lang(?abstract)="en" ) and ( regex(?abstract,"`+godNamewithGoodCaps+`( |,|;|\\\\.)")  and !regex(?abstract,"Zeus Software") and  (regex(?type,"mytholog","i")  ||  regex(?abstract,"mytholog","i") ||  regex(?subject,"mytholog","i")  ||  regex(?abstract," god( |,|;|.//)","i")  )  ))
+}
         `
 
 
@@ -345,6 +328,18 @@ function getGodsInfo() {
            rdfs:label ?label;
            rdf:type ?type.
       Filter(( lang(?label)="en" and lang(?abstract)="en" ) and ( regex(?abstract,"`+godNamewithGoodCaps+`( |,|;|\\\\.)")  and  (regex(?type,"mytholog","i")  ||  regex(?abstract,"mytholog","i")   ||  regex(?abstract," god( |,|;|.//)","i")  )  ))
+}
+
+        `
+
+         var artQuery=`
+       select Distinct(STR(?label)) as ?artPiece where{
+      ?uri rdf:type dbo:Artwork;
+           dbo:abstract ?abstract;
+           rdfs:label ?label;
+           dct:subject ?subject;
+           rdf:type ?type.
+      Filter(( lang(?label)="en" and lang(?abstract)="en" ) and ( regex(?abstract,"`+godNamewithGoodCaps+`( |,|;|\\\\.)") and (regex(?type,"mytholog","i")  ||  regex(?abstract,"mytholog","i") ||  regex(?subject,"mytholog","i")  ||  regex(?abstract," god( |,|;|.//)","i")  )  ))
 }
 
         `
@@ -361,6 +356,7 @@ function getGodsInfo() {
     var encodedConsortsQuery2 = URL + encodeURI(consortsQuery2) + suffix
     var encodedGamesQuery = URL + encodeURI(gamesQuery) + suffix
     var encodedMoviesQuery = URL + encodeURI(moviesQuery) + suffix
+    var encodedArtQuery = URL + encodeURI(artQuery) + suffix
 
 
 
@@ -524,6 +520,19 @@ function getGodsInfo() {
             }
             if (movies.length == 0) document.getElementById('godMovies').innerHTML = "No movies found";
            else document.getElementById('godMovies').innerHTML = movies;
+        }
+    });
+
+    $.ajax({
+        url: encodedArtQuery,
+        success: function (result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                artPiece = results[res].artPiece.value
+                if (artPieces.indexOf(" " + artPiece) === -1) artPieces.push(" " + artPiece)
+            }
+            if (artPieces.length == 0) document.getElementById('godArtPieces').innerHTML = "No art pieces found";
+           else document.getElementById('godArtPieces').innerHTML = artPieces;
         }
     });
 
