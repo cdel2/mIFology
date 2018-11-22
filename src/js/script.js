@@ -24,10 +24,9 @@ function getGodsInfo() {
            
     }
 
-    console.log(godsArray)
     if (godsArray.indexOf(godNamewithGoodCaps) !== -1) {
         document.getElementById("resultTable").style.display="block";
-        document.getElementById("familyTree").style.display = "initial";
+        document.getElementById("familyTree").style.display = "block";
         document.getElementById("noGodFound").style.display="none";
 
     }
@@ -189,7 +188,7 @@ function getGodsInfo() {
         ?uri dbp:name ?n;
         dbp:godOf ?go;
         dbp:type ?t3.
-        FILTER(regex(?t3,".*Greek.*") and regex(?n,".*Zeus( |$)","i"))
+        FILTER(regex(?t3,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
         ?childRes dbp:parents ?parents;
         dbp:type ?t3.
         FILTER(!isBlank(?parents) and isLiteral(?parents))
@@ -207,7 +206,7 @@ function getGodsInfo() {
         dbp:type ?t3.   
         ?parents dbp:type ?t3;
         dbp:name ?parentName.
-        FILTER(regex(?parentName, ".*Zeus( |$)", "i"))
+        FILTER(regex(?parentName, ".*`+godNamewithGoodCaps+`( |$)", "i"))
         ?childRes dbp:name ?child.
         FILTER( datatype(?child)=rdf:langString)
     }
@@ -440,13 +439,13 @@ function getGodsInfo() {
     }).then($.ajax({ 
         url: encodedChildrenQuery2, 
         success: function(result) {
-            var results = result.results.bindings; 
+            var results = result.results.bindings;
             for (var res in results) {
-                sibling = results[res].Children.value
-                if (siblings.indexOf(" " + sibling) === -1) siblings.push(" " + sibling)
+                child = results[res].Children.value
+                if (children.indexOf(" " + child) === -1) children.push(" " + child)
             }
-            if (siblings.length == 0) document.getElementById('godSiblings').innerHTML = "No siblings found";
-            else document.getElementById('godSiblings').innerHTML=siblings;
+            if (children.length == 0) document.getElementById('godChildren').innerHTML = "No child found";
+            else document.getElementById('godChildren').innerHTML=children;
         } 
     }))
 
@@ -461,8 +460,8 @@ function getGodsInfo() {
                 if (parents.indexOf(" " + parent) === -1) parents.push(" " + parent)
             }
             document.getElementById('godParents').innerHTML=parents;
-            document.getElementById('Mom').innerHTML=Mom;
-            document.getElementById('Dad').innerHTML=Dad;
+            document.getElementById('Mom').innerHTML="<div class=\"parent\" onclick=\"newSearch('"+Mom+"')\">"+Mom+"</div>";
+            document.getElementById('Dad').innerHTML="<div class=\"parent\" onclick=\"newSearch('"+Dad+"')\">"+Dad+"</div>";
         } 
     });     
         
@@ -590,8 +589,7 @@ function updateTree(god) {
     var encodedChildrenPapaQuery = URL + encodeURI(childrenPapaQuery) + suffix
     var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
 
-    var divConsort = "<div class=\"generation\" id=\"parents\">";
-    
+    var tabConsorts = "<tr>"
     $.ajax({
         url: encodedChildrenPapaQuery,
         success: function (result) {
@@ -602,19 +600,25 @@ function updateTree(god) {
             }
         }
     }).then($.ajax({ 
-        url: encodedConsortsQuery, 
+        url: encodedConsortsQuery,
         success: function(result) {
             var results = result.results.bindings;
             for (var res in results) {
                 consort = results[res].Consorts.value
                 if (consorts.indexOf(consort) === -1) {
                     consorts.push(consort);
-                    divConsort+="<div id=\""+consort+"\" class=\"card\"><div class=\"card-m\">"+consort+"</div><div id=\""+consort+"Children\"></div></div>"
-                    findCommonChild(god, consort, childrenPapa)
+                    tabConsorts+="<td><div class=\"consort\" onclick=\"newSearch('"+consort+"')\">"+consort+"</div></td>"
                 }
             }
-            divConsort+="</div>";
-            document.getElementById('consorts').innerHTML=divConsort;
+            tabConsorts+="</tr><tr>"
+            for (var res in consorts) {
+                consort = consorts[res]
+                tabConsorts+="<td class=\"children\" id=\""+consort+"Children\"></td>"
+                findCommonChild(god, consort, childrenPapa)
+                
+            }
+            tabConsorts+="</tr>";
+            document.getElementById('consortsAndChildren').innerHTML=tabConsorts;
         } 
     }))
 }
@@ -656,7 +660,7 @@ function findCommonChild(god, consort, childrenPapa) {
     `
 
     var encodedChildrenMamanQuery = URL + encodeURI(childrenMamanQuery) + suffix
-    var divChildren = "<div class=\"generation\" id=\"parents\">";
+    var divChildren = "<div class=\"children\">";
 
     $.ajax({
         url: encodedChildrenMamanQuery,
@@ -668,10 +672,15 @@ function findCommonChild(god, consort, childrenPapa) {
             }
             var commonChildren = childrenPapa.filter(value => -1 !== childrenMaman.indexOf(value));
             for(child in commonChildren) {
-                divChildren+="<div class=\"card-child\">"+commonChildren[child]+"</div><br>"
+                divChildren+="<div class=\"child\" onclick=\"newSearch('"+commonChildren[child]+"')\">"+commonChildren[child]+"</div>"
             }
             divChildren+="</div>";
             document.getElementById(consort+"Children").innerHTML=divChildren;
         }
     })
+}
+
+function newSearch(god){
+    document.getElementById("GodName").value = god
+    getGodsInfo()
 }

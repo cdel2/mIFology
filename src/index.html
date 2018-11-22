@@ -21,7 +21,7 @@
 		<div class="search-container">
 			<div class="topnav">
 				<a class="active" href="#home" onclick="hideTab()">Mythology</a>
-				<a href="#about" id="homeButton">A dynamic browser for Greek Divinities</a>  
+				<div class="title" href="#about" id="homeButton">A dynamic browser for Greek Divinities</div>  
 			</div>
 
 			<div class="ui-widget">
@@ -94,24 +94,40 @@
 					<td><div id="godMovies"></div></td> 
 				</tr>
 
+				<!-- L'arbre dans le tableau ou non ? -->
+
+				<tr>
+					<td><b>Family Tree</b></td>
+					<td>
+						<div id="familyTree" style="display:none">
+								<table align=center style="width:70%">
+									<tr>
+										<td><b>Parents</b></td>
+										<td><div class="parent" id="Mom"></div></td>
+										<td><div class="parent" id="Dad"></div></td>
+									</tr>
+									<tr>
+										<td><b>God</b></td>
+										<td colspan="2"><div class="MyGod" id="MyGod"></div></td>
+									</tr>
+									<tr>
+										<td><b>Consorts and respective children</b></td>
+										<td colspan="2" class="noPadding">
+											<table class="consortsTable" id="consortsAndChildren" style="width:100%">
+											</table>
+										</td>
+									</tr>
+								</table>
+							</div>
+					</td>
+				</tr>
+
 			</table>
 		</div>
 
-		<div id="familyTree" style="display:none;">
-			<div class="generation" id="grandParents">
-				<div class="pair">
-					<div class="card-m" id="Mom"></div>
-					<div class="card-m" id="Dad"></div>
-				</div>
-			</div>
-			
-		<div class="generation" id="parents">
-				<div class="card-m" id="MyGod">Mon dieu</div>
-			</div>
-			<div id="consorts"></div>
+		<br><br><br>
 
-			<!-- <div class="generation" id="child"> -->
-		</div>
+		
 
 		<br>
 		<br>
