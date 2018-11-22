@@ -8,21 +8,21 @@ td.noPadding {
 }
 
 .parent {
-  color:blue;
+  /*color:blue;*/
   cursor: pointer;
 }
 
 .MyGod{
-  color:green;
+  /*color:green;*/
 }
 
 .consort{
-  color:pink;
+  /*color:pink;*/
   cursor: pointer;
 }
 
 .children{
-  color:red;
+  /*color:red;*/
 }
 
 .child{
