@@ -108,35 +108,37 @@ function getGodsInfo() {
     optional{?uri foaf:gender ?ge}.
     }
         `
-        var siblingsQuery = `
-            SELECT DISTINCT STR(?sibling) as ?Sibling
-            WHERE {
-            ?uri dbp:name ?n;
-            dbp:godOf ?go;
-            dbp:type ?t.
-            FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
+        
+    var siblingsQuery = `
+    SELECT DISTINCT STR(?sibling) as ?Sibling WHERE 
+        {
+        ?uri dbp:name ?n;
+        dbp:godOf ?go;
+        dbp:type ?t.
+        FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)","i"))
 
-            {
-            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30} 
-            ?uri dbp:siblings ?siblings.
-            FILTER(!isBlank(?siblings) and isLiteral(?siblings))
-            BIND(replace(?siblings, " and ", " ") as ?sibStr)
-            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
-            BIND (replace(replace(?sibStr, ?skipN, ""), ",.*$", "") AS ?sibling)
-            }
-            UNION 
-            {
-                {?uri dbp:siblings ?siblings.}
-                UNION
-                {?siblings dbp:siblings ?uri.}
+        {
+        VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30} 
+        ?uri dbp:siblings ?siblings.
+        FILTER(!isBlank(?siblings) and isLiteral(?siblings))
+        BIND(replace(?siblings, " and ", " ") as ?sibStr)
+        BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
+        BIND (replace(replace(?sibStr, ?skipN, ""), ",.*$", "") AS ?sibling)
+        }
+        UNION 
+        {
+            {?uri dbp:siblings ?siblings.}
+            UNION
+            {?siblings dbp:siblings ?uri.}
 
-                ?siblings dbp:godOf ?go2;
-                dbp:type ?t;
-                dbp:name ?sibling.
-                
-                Filter(isLiteral(?sibling))
-            }}
-            `
+            ?siblings dbp:godOf ?go2;
+            dbp:type ?t;
+            dbp:name ?sibling.
+            
+            Filter(isLiteral(?sibling) and datatype(?sibling)=rdf:langString)
+        }
+        }
+        `
 
     var symbolsQuery = `
         select DISTINCT STR(?symbol) as ?Symbol where {
@@ -418,6 +420,7 @@ function getGodsInfo() {
                 sibling = results[res].Sibling.value
                 if (siblings.indexOf(" " + sibling) === -1) siblings.push(" " + sibling)
             }
+            siblings = sortSiblings(siblings)
             if (siblings.length == 0) document.getElementById('godSiblings').innerHTML = "No siblings found";
             else document.getElementById('godSiblings').innerHTML=siblings;
         } 
@@ -462,15 +465,21 @@ function getGodsInfo() {
         url: encodedParentsQuery, 
         success: function(result) {
             var results = result.results.bindings; 
+            var Mom=0;
+            var Dad=0;
             for (var res in results) {
                 parent = results[res].parent.value
-                Mom = results[0].parent.value
-                Dad = results[1].parent.value
+                parent = rephrase(parent)
                 if (parents.indexOf(" " + parent) === -1) parents.push(" " + parent)
+                if (typeof results[0].parent.value !== 'undefined') Mom = rephrase(results[0].parent.value)
+                if (typeof results[1].parent.value !== 'undefined') Dad = rephrase(results[1].parent.value)
             }
-            document.getElementById('godParents').innerHTML=parents;
-            document.getElementById('Mom').innerHTML="<div class=\"parent\" onclick=\"newSearch('"+Mom+"')\">"+Mom+"</div>";
-            document.getElementById('Dad').innerHTML="<div class=\"parent\" onclick=\"newSearch('"+Dad+"')\">"+Dad+"</div>";
+            if (parents.length == 0) document.getElementById('godParents').innerHTML = "No parent found";
+            else document.getElementById('godParents').innerHTML=parents;
+            if (Mom === 0) document.getElementById('Mom').innerHTML="<div class=\"parent\">No second parent found</div>"
+            else document.getElementById('Mom').innerHTML="<div class=\"parent\" onclick=\"newSearch('"+Mom+"')\">"+Mom+"</div>";
+            if (Dad === 0) document.getElementById('Dad').innerHTML="<div class=\"parent\">No parent found</div>"
+            else document.getElementById('Dad').innerHTML="<div class=\"parent\" onclick=\"newSearch('"+Dad+"')\">"+Dad+"</div>";
         } 
     });     
         
@@ -479,7 +488,6 @@ function getGodsInfo() {
         success: function (result) {
             var results = result.results.bindings;
             for (var res in results) {
-                console.log(results)
                 consort = results[res].Consorts.value
                 if (consorts.indexOf(" " + consort) === -1) consorts.push(" " + consort)
             }
@@ -532,7 +540,7 @@ function getGodsInfo() {
                 if (artPieces.indexOf(" " + artPiece) === -1) artPieces.push(" " + artPiece)
             }
             if (artPieces.length == 0) document.getElementById('godArtPieces').innerHTML = "No art pieces found";
-           else document.getElementById('godArtPieces').innerHTML = artPieces;
+            else document.getElementById('godArtPieces').innerHTML = artPieces;
         }
     });
 
@@ -612,7 +620,7 @@ function updateTree(god) {
     var encodedChildrenPapaQuery = URL + encodeURI(childrenPapaQuery) + suffix
     var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
 
-    var tabConsorts = "<tr>"
+    var tabConsorts = "<table class=\"consortsTable\" id=\"consortsAndChildren\" style=\"width:100%\"><tr>"
     $.ajax({
         url: encodedChildrenPapaQuery,
         success: function (result) {
@@ -626,6 +634,7 @@ function updateTree(god) {
         url: encodedConsortsQuery,
         success: function(result) {
             var results = result.results.bindings;
+            var consorts = []
             for (var res in results) {
                 consort = results[res].Consorts.value
                 if (consorts.indexOf(consort) === -1) {
@@ -638,10 +647,10 @@ function updateTree(god) {
                 consort = consorts[res]
                 tabConsorts+="<td class=\"children\" id=\""+consort+"Children\"></td>"
                 findCommonChild(god, consort, childrenPapa)
-                
             }
-            tabConsorts+="</tr>";
-            document.getElementById('consortsAndChildren').innerHTML=tabConsorts;
+            tabConsorts+="</tr></table>";
+            if (consorts.length == 0) document.getElementById('consortTable').innerHTML = "No consort found";
+            else document.getElementById('consortTable').innerHTML=tabConsorts;
         } 
     }))
 }
@@ -698,12 +707,29 @@ function findCommonChild(god, consort, childrenPapa) {
                 divChildren+="<div class=\"child\" onclick=\"newSearch('"+commonChildren[child]+"')\">"+commonChildren[child]+"</div>"
             }
             divChildren+="</div>";
-            document.getElementById(consort+"Children").innerHTML=divChildren;
+            if (commonChildren.length == 0) document.getElementById(consort+"Children").innerHTML = "No child found";
+            else document.getElementById(consort+"Children").innerHTML=divChildren;
         }
     })
+}
+
+function rephrase(name) {
+    name = name.replace('or ','');
+    name = name.replace(';','');
+    name = name.replace(' ?, ','');
+    return name
 }
 
 function newSearch(god){
     document.getElementById("GodName").value = god
     getGodsInfo()
+}
+
+function sortSiblings(siblings){
+    var newsiblings = []
+    for (i in siblings){
+        if(siblings[i] !==" ē")
+        newsiblings.push(rephrase(siblings[i]))
+    }
+    return newsiblings
 }
