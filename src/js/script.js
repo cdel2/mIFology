@@ -242,14 +242,14 @@ function getGodsInfo() {
         }
         }`
     var consortsQuery = `
-        select DISTINCT STR(?consort) as ?Consort where 
+        select DISTINCT STR(?consort) as ?Consorts where 
         {
             ?uri dbp:name ?n;
             dbp:godOf ?go;
             dbp:type ?t.
-            Filter(regex(?t,".*Greek.*") and regex(?n,".*`+godNamewithGoodCaps+`( |$)"))
+            Filter(regex(?t,".*Greek.*") and regex(?n,".*`+ godNamewithGoodCaps +`( |$)","i"))
         {
-            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20} #can split the consort string into 20 different consorts
+            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20}
             ?uri dbp:consort ?consorts.
             FILTER(!isBlank(?consorts) and isLiteral(?consorts))
             BIND(replace(?consorts, " and ", ",") as ?consortStr)
@@ -267,7 +267,7 @@ function getGodsInfo() {
     `
 
     var consortsQuery2 = `
-    SELECT DISTINCT STR(?consort) as ?Consort
+    SELECT DISTINCT STR(?consort) as ?Consorts
     WHERE {
       {
          ?uri dbp:name ?n;
