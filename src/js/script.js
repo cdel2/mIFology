@@ -580,39 +580,67 @@ function updateTree(god) {
         SELECT DISTINCT STR(?consort) as ?Consorts
         WHERE {
         {
+         ?uri dbp:name ?n;
+         dbp:godOf ?go;
+         dbp:type ?t.
+         FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ god + `( |$)","i"))
+    
+         ?consortRes dbp:consort ?ourGod;
+         dbp:type ?t.
+         FILTER(!isBlank(?ourGod) and isLiteral(?ourGod))
+    
+         VALUES ?N1 { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20}
+         BIND(replace(?ourGod, " and ", " ") as ?ourGodStr)
+         BIND (concat("^([^,]*,){", str(?N1) ,"} *") AS ?skipN1)
+         BIND (replace(replace(?ourGodStr, ?skipN1, ""), ",.*$", "") AS ?ourGodName)
+         FILTER(regex(?ourGodName, CONCAT(?n,"( |$)"), "i"))
+         ?consortRes dbp:name ?consort.
+      }
+      UNION 
+      {
+         ?uri dbp:name ?n;
+         dbp:godOf ?go;
+         dbp:type ?t.
+         FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+ god +`( |$)","i"))
+         ?consortRes dbp:consort ?ourGod;
+         dbp:type ?t.   
+         ?ourGod dbp:type ?t;
+         dbp:name ?ourGodName.
+         FILTER(regex(?ourGodName, CONCAT(?n,"( |$)"), "i"))
+         ?consortRes dbp:name ?consort.
+      }
+    } `
+
+    var consortsQuery2 = `
+        SELECT DISTINCT STR(?consort) as ?Consorts
+        WHERE {
             ?uri dbp:name ?n;
             dbp:godOf ?go;
             dbp:type ?t.
-            FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+god+`( |$)","i"))
-            ?consortRes dbp:consort ?ourGod;
-            dbp:type ?t.
-            FILTER(!isBlank(?ourGod) and isLiteral(?ourGod))
-            VALUES ?N1 { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20} 
-            BIND(replace(?ourGod, " and ", " ") as ?ourGodStr)
-            BIND (concat("^([^,]*,){", str(?N1) ,"} *") AS ?skipN1)
-            BIND (replace(replace(?ourGodStr, ?skipN1, ""), ",.*$", "") AS ?ourGodName)
-            FILTER(regex(?ourGodName, ?n, "i"))
-            ?consortRes dbp:name ?consort.
-        }
-        UNION 
+            Filter(regex(?t,".*Greek.*") and regex(?n,".*`+ god +`( |$)","i"))
         {
-            ?uri dbp:name ?n;
-            dbp:godOf ?go;
-            dbp:type ?t.
-            FILTER(regex(?t,".*Greek.*") and regex(?n,".*`+god+`( |$)","i"))
-            ?consortRes dbp:consort ?ourGod;
-            dbp:type ?t.   
-            ?ourGod dbp:type ?t;
-            dbp:name ?ourGodName.
-            FILTER(regex(?ourGodName, ?n, "i"))
-            ?consortRes dbp:name ?consort.
+            VALUES ?N { 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20}
+            ?uri dbp:consort ?consorts.
+            FILTER(!isBlank(?consorts) and isLiteral(?consorts))
+            BIND(replace(?consorts, " and ", ",") as ?consortStr)
+            BIND (concat("^([^,]*,){", str(?N) ,"} *") AS ?skipN)
+            BIND (replace(replace(?consortStr, ?skipN, ""), ",.*$", "") AS ?consort)
         }
-        }`
+        UNION
+        {
+            ?uri dbp:consort ?consorts.
+            ?consorts dbp:type ?t;
+            dbp:name ?consort.
+            FILTER(datatype(?consort)=rdf:langString)
+        }
+    } `
         
     var encodedChildrenPapaQuery = URL + encodeURI(childrenPapaQuery) + suffix
     var encodedConsortsQuery = URL + encodeURI(consortsQuery) + suffix
+    var encodedConsortsQuery2 = URL + encodeURI(consortsQuery2) + suffix
 
     var tabConsorts = "<table class=\"consortsTable\" id=\"consortsAndChildren\" style=\"width:100%\"><tr>"
+    var tabChildren= ""
     $.ajax({
         url: encodedChildrenPapaQuery,
         success: function (result) {
@@ -622,11 +650,12 @@ function updateTree(god) {
                 if (childrenPapa.indexOf(child) === -1) childrenPapa.push(child)
             }
         }
-    }).then($.ajax({ 
+    });
+    var consorts = []
+    $.ajax({ 
         url: encodedConsortsQuery,
         success: function(result) {
             var results = result.results.bindings;
-            var consorts = []
             for (var res in results) {
                 consort = results[res].Consorts.value
                 if (consorts.indexOf(consort) === -1) {
@@ -634,16 +663,28 @@ function updateTree(god) {
                     tabConsorts+="<td><div class=\"consort\" onclick=\"newSearch('"+consort+"')\">"+consort+"</div></td>"
                 }
             }
-            tabConsorts+="</tr><tr>"
+        } 
+    }).then($.ajax({
+        url: encodedConsortsQuery2,
+        success: function (result) {
+            var results = result.results.bindings;
+            for (var res in results) {
+                consort = results[res].Consorts.value
+                if (consorts.indexOf(consort) === -1) {
+                    consorts.push(consort);
+                    tabConsorts += "<td><div class=\"consort\" onclick=\"newSearch('" + consort + "')\">" + consort + "</div></td>"
+                }
+            }
+            tabConsorts += "<tr></tr>";
             for (var res in consorts) {
                 consort = consorts[res]
-                tabConsorts+="<td class=\"children\" id=\""+consort+"Children\"></td>"
+                tabChildren += "<td class=\"children\" id=\"" + consort + "Children\"></td>"
                 findCommonChild(god, consort, childrenPapa)
             }
-            tabConsorts+="</tr></table>";
-            if (consorts.length == 0) document.getElementById('consortTable').innerHTML = "No consort found";
-            else document.getElementById('consortTable').innerHTML=tabConsorts;
-        } 
+            tabConsorts += tabChildren
+            tabConsorts += "</tr></table>";
+            document.getElementById('consortTable').innerHTML = tabConsorts;
+        }
     }))
 }
 
