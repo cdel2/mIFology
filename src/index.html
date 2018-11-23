@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
 <html>
 
@@ -8,8 +8,6 @@
 		<title>Greek Gods</title>
 
 		<link rel="stylesheet" href="./style/style.css">
-		
-		<link rel="stylesheet" href="./style/stylearbre.css">
 		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -21,7 +19,7 @@
 		<div class="search-container">
 			<div class="topnav">
 				<a class="active" href="#home" onclick="hideTab()">Mythology</a>
-				<a href="#about" id="homeButton">A dynamic browser for Greek divinities</a>  
+				<div class="title" href="#about" id="homeButton">A dynamic browser for Greek Divinities</div>  
 			</div>
 
 			<div class="ui-widget">
@@ -94,30 +92,46 @@
 					<td><div id="godMovies"></div></td> 
 				</tr>
 
+				<tr>
+					<td><b>Art pieces appearences</b></td>
+					<td><div id="godArtPieces"></div></td> 
+				</tr>
+
+				<!-- L'arbre dans le tableau ou non ? -->
+
+				<tr>
+					<td><b>Family Tree</b></td>
+					<td>
+						<div id="familyTree" style="display:none">
+								<table align=center style="width:70%">
+									<tr>
+										<td><b>Parents</b></td>
+										<td><div class="parent" id="Mom"></div></td>
+										<td><div class="parent" id="Dad"></div></td>
+									</tr>
+									<tr>
+										<td><b>God</b></td>
+										<td colspan="2"><div class="MyGod" id="MyGod"></div></td>
+									</tr>
+									<tr>
+										<td><b>Consorts and respective children</b></td>
+										<td colspan="2" class="noPadding">
+											<div id="consortTable">
+													
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+					</td>
+				</tr>
+
 			</table>
 		</div>
 
-		<div id="familyTree" style="display:none;">
-			<div class="generation" id="grandParents">
-				<div class="pair">
-					<div class="card-m" id="Mom"></div>
-					<div class="card-m" id="Dad"></div>
-				</div>
-			</div>
-			
-		<div class="generation" id="parents">
-				<div class="card-m" id="MyGod">Mon dieu</div>
-			</div>
-			<div id="consorts"></div>
+		<br><br><br>
 
-			<div class="generation" id="child">
-					
-				<div class="card-m">Arès</div>
-				<div class="card-m">Héphaistos</div>
-				<div class="card-m">Ahébérès</div>
-				</div>
-			</div>
-		</div>
+		
 
 		<br>
 		<br>
