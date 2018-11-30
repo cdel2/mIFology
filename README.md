@@ -3,7 +3,7 @@
 Le projet de Web sémantique pour rassembler des données sur des divinités grecques.
 
 ## Getting Started
-Pour lancer le projet, tapez la commande "npm start" depuis le répertoire racine.
+Pour lancer le projet, vous pouvez ouvrir le fichier "index.html" situé à la racine du projet depuis votre navigateur préféré. Vous pouvez également taper la commande "npm start" depuis le répertoire racine et vous rendre à l'adresse "http://localhost:8000/".
 
 ### Prerequisites
 
