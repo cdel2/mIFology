@@ -32,20 +32,12 @@ function autoComplete() {
                 })
             
             for (var i = 0; i < godsArray.length; i++) {
-                
-                //console.log("element i", godsArray[i])
-                var node = document.createElement("OPTION");                 // Create a <li> node
-                //var textnode = document.createTextNode(data.results.bindings[i]["callret-0"].value);         // Create a text node
+                var node = document.createElement("OPTION");
                 var textnode = document.createTextNode(godsArray[i]);
-                node.appendChild(textnode);                              // Append the text to <li>
-                document.getElementById("godsNames").appendChild(node);     // Append <li> to <ul> with 
+                node.appendChild(textnode);                            
+                document.getElementById("godsNames").appendChild(node);  
 
             }
-
-            //var progress=30;
-            //$('#GodName').autocomplete({
-            //
-            //});
         },
         error: function(e) {
             alert(e);
